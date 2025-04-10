@@ -1,0 +1,22 @@
+% $Id: hw4-gtestL.spl,v 1.2 2024/09/17 21:48:53 leavens Exp leavens $
+begin
+  const two = 2;
+  const three = 3;
+  var i;
+  print three;  % prints 3
+  i := two * three - (two * three - three * two);
+  while i > (two - two)
+  do
+    print i;  % prints 6, then 5, 4, 3, 2, 1
+    i := i - (three - two + 0 * 5021 * 6414)
+  end;
+  if i < 0
+  then if i > 0
+       then print 0
+       else print 0
+       end
+  else if i == 0
+       then print (three - two) % prints 1
+       end
+  end
+end.

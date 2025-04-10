@@ -1,0 +1,10 @@
+% $Id: hw2-test8.spl,v 1.2 2024/10/08 11:57:56 leavens Exp leavens $
+begin
+   proc skip
+   var x,y,zzy,xyzzy;   % syntax error, var out of order
+   begin
+     if 0!=0then begin end end
+   end;
+   xyzzy:=xyzzy+9;
+   if xyzzy==zzy-252then x:=y*zzy else call skip end
+end.

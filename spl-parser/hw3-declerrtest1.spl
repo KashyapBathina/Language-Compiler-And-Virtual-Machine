@@ -1,0 +1,5 @@
+% $Id: hw3-declerrtest1.spl,v 1.3 2024/10/07 21:38:11 leavens Exp $
+begin
+  var x, y, x;  % error, duplicate declaration of x!
+  x := 7
+end.

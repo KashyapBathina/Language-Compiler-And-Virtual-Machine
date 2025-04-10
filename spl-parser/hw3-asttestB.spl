@@ -1,0 +1,6 @@
+% $Id: hw3-asttestB.spl,v 1.2 2024/09/17 20:58:21 leavens Exp $
+begin
+  print 5
+end.
+
+

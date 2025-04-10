@@ -1,0 +1,5 @@
+begin
+  print 49;
+  print 10
+end
+.

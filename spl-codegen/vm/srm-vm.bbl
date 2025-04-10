@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{GNUMake}
+Free Software Foundation.
+\newblock {\em GNU Make Manual}, Feb 2023.
+\newblock \url{https://www.gnu.org/software/make/manual/}.
+
+\bibitem{Kane-Heinrich92}
+Gerry Kane and Joe Heinrich.
+\newblock {\em {MIPS RISC} architectures}.
+\newblock Prentice-Hall, Inc., 1992.
+
+\end{thebibliography}

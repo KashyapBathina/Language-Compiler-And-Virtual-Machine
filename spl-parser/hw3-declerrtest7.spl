@@ -1,0 +1,20 @@
+% $Id: hw3-declerrtest7.spl,v 1.4 2024/10/08 11:34:16 leavens Exp $
+begin
+  const x = 121, y = 122, z = 123;
+  var a, b, c;
+  begin
+    x := y - z - z;
+    a := 2;
+    if x < y
+    then
+      z := x;
+      y := y-x+2*3/4*7*a
+    else
+      while x > y
+      do
+        x := x-1;
+        y := 3*(y+(4*q)) - 7*z  % error, undeclared identifier!
+      end
+    end
+  end
+end.

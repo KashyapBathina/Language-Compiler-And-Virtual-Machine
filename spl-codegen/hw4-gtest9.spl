@@ -1,0 +1,7 @@
+% $Id: hw4-gtest9.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  if 0 == 0
+  then print 111   % prints 111
+  else print 0
+  end
+end.

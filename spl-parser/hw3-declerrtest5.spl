@@ -1,0 +1,13 @@
+% $Id: hw3-declerrtest5.spl,v 1.4 2024/10/08 11:34:16 leavens Exp $
+begin
+  const x = 121, y = 122, z = 123;
+  var a, b, c;
+  begin
+      if d == eId  % error, undeclared identifiers!
+      then
+        f := x   % error, undeclared identifier!
+      else
+        f := y   % error, undeclared identifier!
+      end
+  end
+end.

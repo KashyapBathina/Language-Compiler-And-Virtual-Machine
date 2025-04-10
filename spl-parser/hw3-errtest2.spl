@@ -1,0 +1,5 @@
+% $Id: hw3-errtest2.spl,v 1.4 2024/10/07 21:38:11 leavens Exp $
+begin
+    print 49;
+    .        % syntax error, can't have a period here!
+end.

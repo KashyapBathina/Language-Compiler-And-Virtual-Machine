@@ -1,0 +1,11 @@
+Tokens from file hw2-errtest2.spl
+Number Line  Text
+288    3    "<"
+290    3    ">"
+258    4    "procedure"
+hw2-errtest2.spl:4: invalid character: '!' ('\041')
+258    5    "a"
+hw2-errtest2.spl:5: invalid character: '_' ('\0137')
+258    5    "bad"
+hw2-errtest2.spl:5: invalid character: '_' ('\0137')
+258    5    "id"

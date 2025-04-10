@@ -1,0 +1,8 @@
+% $Id: hw4-gtestA.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  const false = 0, true = 1;
+  if false < true
+  then print true    % prints 1
+  else print false
+  end
+end.

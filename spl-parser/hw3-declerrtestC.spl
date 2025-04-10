@@ -1,0 +1,9 @@
+% $Id: hw3-declerrtestC.spl,v 1.2 2024/09/17 20:58:21 leavens Exp $
+begin
+  const nl = 10, x = 120, y = 121,
+                          x = 170; % duplicate declaration of x!
+  begin
+    print y;
+    print nl
+  end
+end.

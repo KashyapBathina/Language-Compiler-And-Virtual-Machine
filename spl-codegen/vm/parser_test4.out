@@ -1,0 +1,21 @@
+      PC: 0
+GPR[$gp]: 2048 	GPR[$sp]: 6144 	GPR[$fp]: 6144 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 5	    2049: 0	        ...     
+    6144: 0	
+
+==>      0: ARI $sp, -2
+      PC: 1
+GPR[$gp]: 2048 	GPR[$sp]: 6142 	GPR[$fp]: 6144 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 5	    2049: 0	        ...     
+    6142: 0	        ...     
+
+==>      1: BNE $sp, -1, 1	# target is word address 2
+      PC: 2
+GPR[$gp]: 2048 	GPR[$sp]: 6142 	GPR[$fp]: 6144 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 5	    2049: 0	        ...     
+    6142: 0	        ...     
+
+==>      2: EXIT 0

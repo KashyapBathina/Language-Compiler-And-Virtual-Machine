@@ -1,0 +1,9 @@
+% $Id: hw4-gtestQ.spl,v 1.1 2024/11/12 02:04:20 leavens Exp $
+begin
+  if divisible 33 by 3
+  then
+    print 86  % prints 86
+  else
+    print 55
+  end
+end.

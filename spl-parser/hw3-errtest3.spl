@@ -1,0 +1,6 @@
+% $Id: hw3-errtest3.spl,v 1.7 2024/10/07 21:38:11 leavens Exp $
+begin
+  
+  some illegal characters!   % syntax error! (and illegal characters)!
+  and this stuff: !@#%&*()(*_ % syntax errors and illegal characters!
+end |

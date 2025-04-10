@@ -1,0 +1,25 @@
+% $Id: hw4-gtestN.spl,v 1.4 2024/11/11 18:56:53 leavens Exp $
+% various statments
+begin
+  const pi = 31, e = 3;
+  var x, y, z;
+  begin
+    x := 3*4-2/5;  % x is 12 = 12-0
+    if x > 0
+    then x := y+1 % x is 1
+    else
+      x := 1;
+      y := z
+    end;
+    while x <= 10
+    do
+      x := x+1
+    end;
+    print x;     % prints 11
+    print y+2;   % prints 2
+    if divisible y by 2
+    then y := y / 2 + 3 % y is 3
+    end;
+    print y      % prints 3
+  end
+end.

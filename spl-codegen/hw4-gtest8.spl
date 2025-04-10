@@ -1,0 +1,10 @@
+% $Id: hw4-gtest8.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  const aConst = 77;
+  var aVar, anotherVar;
+  print aConst;             % prints 77
+  aVar := aConst;
+  print aVar;               % prints 77
+  anotherVar := aConst + 1;
+  print anotherVar          % prints 78
+end.

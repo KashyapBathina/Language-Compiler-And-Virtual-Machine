@@ -1,0 +1,13 @@
+% $Id: hw4-vmtest6.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  const nl = 10, y = 121;
+  var x, z, q;
+  begin
+    x := nl+1+0-0*10/10;
+    print x;            % prints 11
+    z := x - x + y - (1 - 2 + 1);
+    print z + q;        % prints 121
+    q := x / z;
+    print q-0-0         % prints 0
+  end
+end.

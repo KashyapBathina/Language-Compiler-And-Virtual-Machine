@@ -1,0 +1,9 @@
+Address Instruction
+     0: SRI $sp, 1
+     1: CPR $sp, $fp
+     2: SWR $sp, 0, $sp
+     3: SWR $gp, 0, $fp
+     4: BEQ $gp, 0, 2	# target is word address 6
+     5: EXIT 1
+     6: EXIT 0
+    2048: 0	        ...     

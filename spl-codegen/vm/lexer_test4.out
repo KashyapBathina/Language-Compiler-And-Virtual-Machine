@@ -1,0 +1,28 @@
+      PC: 0
+GPR[$gp]: 1024 	GPR[$sp]: 2048 	GPR[$fp]: 2048 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    1024: 0	        ...     
+    2048: 0	
+
+==>      0: LIT $sp, -1, 122
+      PC: 1
+GPR[$gp]: 1024 	GPR[$sp]: 2048 	GPR[$fp]: 2048 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    1024: 0	        ...         2047: 122	
+    2048: 0	
+
+==>      1: SRI $sp, 1
+      PC: 2
+GPR[$gp]: 1024 	GPR[$sp]: 2047 	GPR[$fp]: 2048 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    1024: 0	        ...     
+    2047: 122	    2048: 0	
+
+==>      2: MUL $sp, 0
+      PC: 3	      HI: 0	      LO: 14884
+GPR[$gp]: 1024 	GPR[$sp]: 2047 	GPR[$fp]: 2048 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    1024: 0	        ...     
+    2047: 122	    2048: 0	
+
+==>      3: EXIT 0

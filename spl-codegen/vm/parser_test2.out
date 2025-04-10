@@ -1,0 +1,56 @@
+      PC: 0
+GPR[$gp]: 104  	GPR[$sp]: 4200 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...     
+    4200: 0	
+
+==>      0: NOP 
+      PC: 1
+GPR[$gp]: 104  	GPR[$sp]: 4200 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...     
+    4200: 0	
+
+==>      1: ADDI $sp, 0, 1
+      PC: 2
+GPR[$gp]: 104  	GPR[$sp]: 4200 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...     
+    4200: 1	
+
+==>      2: SCA $sp, -1, $sp, 0
+      PC: 3
+GPR[$gp]: 104  	GPR[$sp]: 4200 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...         4199: 4200	
+    4200: 1	
+
+==>      3: SRI $sp, 1
+      PC: 4
+GPR[$gp]: 104  	GPR[$sp]: 4199 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...     
+    4199: 4200	    4200: 1	
+
+==>      4: SWR $sp, -1, $fp
+      PC: 5
+GPR[$gp]: 104  	GPR[$sp]: 4199 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...         4198: 4200	
+    4199: 4200	    4200: 1	
+
+==>      5: ADDI $sp, -1, 104
+      PC: 6
+GPR[$gp]: 104  	GPR[$sp]: 4199 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...         4198: 4304	
+    4199: 4200	    4200: 1	
+
+==>      6: LWI $sp, -2, $gp, 0
+      PC: 7
+GPR[$gp]: 104  	GPR[$sp]: 4199 	GPR[$fp]: 4200 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     104: 42	     105: 0	        ...         4198: 4304	
+    4199: 4200	    4200: 1	
+
+==>      7: EXIT 0

@@ -1,0 +1,20 @@
+% $Id: hw3-declerrtest9.spl,v 1.3 2024/10/07 21:38:11 leavens Exp $
+begin
+  const w = 99, x = 100;
+  const y = 122, z = 123;
+  var a, b;
+  var c, d;
+  if a < w
+  then
+    begin
+      c := y / z * x;
+      d := w;
+      if divisible (c - (d * e) - b) by 2  % error, undeclared identifier!
+      then
+        e := f   % error!
+      else
+        e := 3   % error!
+      end
+    end
+  end
+end.

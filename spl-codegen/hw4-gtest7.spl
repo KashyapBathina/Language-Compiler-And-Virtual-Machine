@@ -1,0 +1,10 @@
+% $Id: hw4-gtest7.spl,v 1.3 2024/11/11 21:31:41 leavens Exp $ 
+begin
+  var x;
+  var y;
+  x := -3;
+  y := 4;
+  print y; % prints 4
+  y := x;
+  print y  % prints -3
+end.

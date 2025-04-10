@@ -1,0 +1,5 @@
+begin
+  var x, aLongOne, ALongerOne;
+  x := aLongOne
+end
+.

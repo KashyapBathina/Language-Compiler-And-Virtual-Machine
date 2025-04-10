@@ -1,0 +1,6 @@
+begin
+  var x, y, x;
+  x := 7
+end
+.
+hw3-declerrtest1.spl: line 3 variable "x" is already declared as a variable

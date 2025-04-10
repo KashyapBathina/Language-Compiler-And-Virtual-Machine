@@ -1,0 +1,7 @@
+% $Id: hw3-asttest5.spl,v 1.2 2024/09/17 20:58:21 leavens Exp $
+begin
+  var x;
+  x := 2-1;
+  if x <= 1 then print x end;
+  while x <= 10 do x := x+1 end
+end.

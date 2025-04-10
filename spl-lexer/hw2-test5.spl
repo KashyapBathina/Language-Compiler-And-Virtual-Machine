@@ -1,0 +1,17 @@
+% $Id: hw2-test5.spl,v 1.5 2024/10/08 11:57:56 leavens Exp leavens $
+begin
+  var i, j, k;
+  var a b c     % syntax errors for SPL! missing commas! missing semicolon!
+  const thirty  30, % syntax errors, const out of place, missing =
+        fourty = 40. 
+  proc aVeryLongName;  % syntax error, extra semicolon
+     begin
+       const aReallyLongNameWithCaps = 10;
+       a := aReallyLongNameWithCaps < c <= q;  % syntax error & type error
+       call aVeryLongName;
+       call aReallyBadCall2;
+       if b >= b then while c != 0123 do begin print k end;
+       read i;
+       if i != i then print oops  % error, oops is not declared
+     end
+end.

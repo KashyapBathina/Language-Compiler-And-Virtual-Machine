@@ -1,0 +1,10 @@
+% $Id: hw4-vmtest5.spl,v 1.6 2024/09/17 21:48:53 leavens Exp $
+begin
+  var x, y;
+  begin
+    y := 33;
+    print y;     % prints 33
+    x := y + 22;
+    print x      % prints 55
+  end
+end.

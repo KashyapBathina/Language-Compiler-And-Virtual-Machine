@@ -1,0 +1,5 @@
+% $Id: hw3-asttest3.spl,v 1.3 2024/09/17 20:58:21 leavens Exp $
+begin
+  var x, y;
+  x := y
+end.

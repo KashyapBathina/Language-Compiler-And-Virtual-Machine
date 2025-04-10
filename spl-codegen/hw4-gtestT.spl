@@ -1,0 +1,16 @@
+% $Id: hw4-gtestT.spl,v 1.1 2024/11/12 02:04:20 leavens Exp $
+begin
+  const seventeen = 17;
+  begin
+    var seventeen2;
+    begin
+      seventeen2 := seventeen * seventeen;
+      if divisible seventeen2 by 11
+  	then
+  	  print 86
+  	else
+  	  print 42  % prints 42
+  	end
+    end
+  end
+end.

@@ -1,0 +1,5 @@
+Address Instruction
+     0: SUB $sp, 0, $sp, 0
+     1: EXIT 0
+      64: 10	      65: 0	        ...           67: 16	      68: 0	
+        ...     

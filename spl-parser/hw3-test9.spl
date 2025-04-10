@@ -1,0 +1,16 @@
+% $Id: hw3-test9.spl,v 1.4 2024/10/07 22:38:52 leavens Exp $
+begin
+  var x, y, z;
+  var varname, varname2;
+  begin
+    x := 10;
+    y := 5 - x - -7;
+    while x != 0
+    do
+       begin
+         read x;
+         if x <= 0 then print x+y else print y - x end
+       end
+    end
+  end
+end.

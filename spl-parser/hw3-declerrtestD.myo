@@ -1,0 +1,32 @@
+begin
+  var x, y, z;
+  begin
+    begin
+      begin
+        begin
+          begin
+            begin
+              x := 0;
+              y := 2;
+              read z;
+              if z < x
+              then
+                while z < x
+                do
+                  if z < y
+                  then
+                    z := (z + (y * w))
+                  else
+                    z := (z + 1)
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+.
+hw3-declerrtestD.spl: line 18 identifier "w" is not declared!

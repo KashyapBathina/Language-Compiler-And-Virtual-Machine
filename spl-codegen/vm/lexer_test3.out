@@ -1,0 +1,28 @@
+      PC: 0
+GPR[$gp]: 512  	GPR[$sp]: 4512 	GPR[$fp]: 4512 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     512: 16	     513: 0	        ...     
+    4512: 0	
+
+==>      0: ADDI $sp, 0, 93
+      PC: 1
+GPR[$gp]: 512  	GPR[$sp]: 4512 	GPR[$fp]: 4512 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     512: 16	     513: 0	        ...     
+    4512: 93	
+
+==>      1: ADDI $sp, 0, 93
+      PC: 2
+GPR[$gp]: 512  	GPR[$sp]: 4512 	GPR[$fp]: 4512 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     512: 16	     513: 0	        ...     
+    4512: 186	
+
+==>      2: ADDI $sp, 0, -93
+      PC: 3
+GPR[$gp]: 512  	GPR[$sp]: 4512 	GPR[$fp]: 4512 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+     512: 16	     513: 0	        ...     
+    4512: 93	
+
+==>      3: EXIT 0

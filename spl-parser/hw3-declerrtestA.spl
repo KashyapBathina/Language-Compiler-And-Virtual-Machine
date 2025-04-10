@@ -1,0 +1,33 @@
+% $Id: hw3-declerrtestA.spl,v 1.4 2024/10/08 11:34:16 leavens Exp $
+begin
+  const w = 99, x = 100;
+  const y = 122, z = 123;
+  var a, b;
+  var c, d;
+  while a < w
+  do
+    c := y / z * x;
+    d := w;
+    if c == d
+    then
+      if (a * b / w) < (w*a/b)
+      then
+        if (c/d/e) >= (w/x/z)   % error, undeclared identififer, e!
+        then
+          a := 3
+        else
+          b := 2
+	end
+      else
+        if (y / z - w *x) > (w*z / y - z)  % error!
+        then
+          c := 1
+        else
+          d := -4 - 5
+	end
+      end
+    else
+      e := f
+    end
+  end
+end .

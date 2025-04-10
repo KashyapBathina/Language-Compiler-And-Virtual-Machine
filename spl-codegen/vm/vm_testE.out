@@ -1,0 +1,42 @@
+      PC: 0
+GPR[$gp]: 2048 	GPR[$sp]: 8096 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 0	        ...     
+    8096: 0	
+
+==>      0: SRI $sp, 1
+      PC: 1
+GPR[$gp]: 2048 	GPR[$sp]: 8095 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 0	        ...     
+    8095: 0	        ...     
+
+==>      1: CPR $sp, $fp
+      PC: 2
+GPR[$gp]: 2048 	GPR[$sp]: 8096 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 0	        ...     
+    8096: 0	
+
+==>      2: SWR $sp, 0, $sp
+      PC: 3
+GPR[$gp]: 2048 	GPR[$sp]: 8096 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 0	        ...     
+    8096: 8096	
+
+==>      3: SWR $gp, 0, $fp
+      PC: 4
+GPR[$gp]: 2048 	GPR[$sp]: 8096 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 8096	    2049: 0	        ...     
+    8096: 8096	
+
+==>      4: BEQ $gp, 0, 2	# target is word address 6
+      PC: 6
+GPR[$gp]: 2048 	GPR[$sp]: 8096 	GPR[$fp]: 8096 	GPR[$r3]: 0    	GPR[$r4]: 0    
+GPR[$r5]: 0    	GPR[$r6]: 0    	GPR[$ra]: 0    
+    2048: 8096	    2049: 0	        ...     
+    8096: 8096	
+
+==>      6: EXIT 0

@@ -1,0 +1,6 @@
+% $Id: hw2-errtest6.spl,v 1.1 2024/10/06 12:06:50 leavens Exp $
+% More bad characters
+}{
+It doesn't have to parse!
+"ok?"
+?

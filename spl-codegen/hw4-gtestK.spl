@@ -1,0 +1,8 @@
+% $Id: hw4-gtestK.spl,v 1.3 2024/11/10 13:11:33 leavens Exp $
+begin
+  while 0 < 0
+  do
+    print 0
+  end;
+  print 1    % prints 1
+end.

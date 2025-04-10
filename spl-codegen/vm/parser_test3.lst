@@ -1,0 +1,8 @@
+Address Instruction
+     0: ARI $sp, -2
+     1: BNE $sp, 1, 4	# target is word address 5
+     2: ADDI $sp, 0, 100
+     3: ADD $sp, 0, $gp, 0
+     4: EXIT 0
+    1024: 100	    1025: 40	    1026: 6	    1027: 0	        ...     
+

@@ -1,0 +1,13 @@
+% $Id: hw4-vmtest7.spl,v 1.4 2024/09/17 21:48:53 leavens Exp $
+begin
+  const Y = 89, N = 78, nl =10;
+  begin
+    if 99 > 86
+    then
+      print Y   % prints 89
+    else
+      print N
+    end;
+    print nl     % prints 10
+  end
+end.

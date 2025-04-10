@@ -1,0 +1,16 @@
+% $Id: hw3-asttest4.spl,v 1.5 2024/10/07 19:44:35 leavens Exp $
+% various statments
+begin
+  const pi = 31, e = 3;
+  var x, y, z;
+  x := 3*4-2/5;
+  if x > 0 then x := y+1 else x := 1; y := z end;
+  if divisible y by 3
+  then
+    y := y / 2 + 3
+  end;
+  while x <= 10 do x := x+1 end;
+  print x; % prints 12
+  read y;
+  print y+2 % prints 14
+end.

@@ -1,0 +1,15 @@
+Tokens from file hw2-errtest5.spl
+Number Line  Text
+275    2    "begin"
+272    3    "var"
+258    3    "kfjalkfjalfjafkljadlfjafljafkjaflkjadfffljflkdjfalkfjaferuioqwperiwyeewypytquiwryewiurywteoqwerypqwerypqwerypqwryqweryqoperyqpoeryqpewriqoperoqw8979807049850645eryqpweoryqpweroiyqepwrqpweryqpoeryqoeryqperyqeprqoyeropqeyrioqperypqoeryioqperyqoetyqmnviyqepwrqpweryqpoeryqoeryqperyqeprqoyeropqeyrioqperypqoeryioqperyqoetyqmnviyqepwrqpweryqpoeryqoeryqperyqeprqoyeropqeyrioqperypqoeryioqperyqoetyqmnv"
+265    3    ";"
+258    4    "but"
+258    4    "that"
+258    4    "identifier"
+hw2-errtest5.spl:4: invalid character: ''' ('\047')
+258    4    "s"
+258    4    "okay"
+hw2-errtest5.spl:4: invalid character: '!' ('\041')
+276    5    "end"
+264    5    "."

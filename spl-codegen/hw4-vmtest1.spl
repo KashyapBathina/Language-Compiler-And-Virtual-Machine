@@ -1,0 +1,4 @@
+% $Id: hw4-vmtest1.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  print 10 % prints 10
+end.

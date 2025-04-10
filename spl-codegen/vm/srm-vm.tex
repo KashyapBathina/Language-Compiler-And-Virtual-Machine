@@ -1,0 +1,1017 @@
+% $Id: srm-vm.tex,v 1.62 2023/11/15 19:41:22 leavens Exp leavens $
+\documentclass[11pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{textcomp} %required to set upquote flag and for luximono
+%\usepackage[scaled=0.81]{luximono}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{graphics}
+\usepackage{color}
+\usepackage{ragged2e}
+\lstset{language=C,basicstyle=\ttfamily,commentstyle=\rmfamily\itshape}
+\lstset{morecomment=[l]{//}, %use comment-line-style!
+        morecomment=[s]{/*}{*/}} %for multiline comments
+\lstset{upquote=true} %FH
+% The following is needed for C programs
+\lstset{showspaces=false,showstringspaces=false}
+%\lstset{mathescape=true}
+\input{boxed-figure-new}
+% getting files for figures
+\newcommand{\LSTFILE}[1]{
+\lstinputlisting[basicstyle=\small\ttfamily]{#1}
+}
+\newcommand{\LSTFILESLICE}[2]{
+\lstinputlisting[basicstyle=\small\ttfamily,linerange={#1}]{#2}
+}
+%
+\newcommand{\LSTCFILE}[1]{
+\lstinputlisting[language=C,basicstyle=\small\ttfamily]{#1}
+}
+\newcommand{\LSTCFILESLICE}[2]{
+\lstinputlisting[language=C,basicstyle=\small\ttfamily,linerange={#1}]{#2}
+}
+\usepackage[bookmarks=false]{hyperref}
+%\usepackage{varioref}  % doesn't work with hyperref, it seems, sigh
+%\renewcommand{\reftextfacebefore}{on the previous page}
+%\renewcommand{\reftextfaceafter}{on the next page}
+\newcommand{\tabref}[1]{Table~\ref{#1}}  % vref from varioref
+\newcommand{\tabnref}[1]{Table~\ref{#1}}  % doesn't use varioref
+\newcommand{\figref}[1]{Figure~\ref{#1}}  % vref from varioref
+\newcommand{\fignref}[1]{Figure~\ref{#1}}  % doesn't use varioref
+\newcommand{\secref}[1]{Section~\ref{#1}}  % vref from varioref
+\newcommand{\secnref}[1]{Section~\ref{#1}}  % doesn't use varioref
+
+\input{obey}
+\input{grammar}
+\renewcommand{\nonterm}[1]{\mbox{$\langle$\textrm{#1}$\rangle$}}
+\renewcommand{\arbno}[1]{\{#1\}}
+\newcommand{\gramquote}[1]{\textrm{`}#1\textrm{'}}
+\input{use-full-height}
+\input{use-full-width}
+\input{continuedenum}
+
+\setlength\RaggedRightParindent{\parindent}
+\input{srm-isa.tex}
+\newcommand{\IFO}[2]{\textrm{\textbf{if} \ensuremath{#1} \textbf{then} \ensuremath{#2} }}
+\newcommand{\IF}[3]{\textrm{\textbf{if} #1 \textbf{then} #2 \textbf{else} #3}}
+\newcommand{\EQUALS}{\ensuremath{=}} % or {\ensuremath{\:\texttt{==}\:}}
+%
+\bibliographystyle{plain}
+%
+\title{Simplified RISC Machine Manual \\
+       (\lstinline!$Revision: 1.62 $!)}
+\author{Gary T. Leavens \\
+        Leavens@ucf.edu}
+\begin{document}
+
+\maketitle
+\begin{abstract}
+This document defines the machine code of the Simplified RISC Machine VM for
+use in the Systems Software class (COP 3402) at UCF.
+\end{abstract}
+
+\section{Overview}
+
+The Simplified RISC Machine (SRM) processor's instruction set architecture
+(ISA) is simplified from the MIPS processor's ISA \cite{Kane-Heinrich92}. 
+In particular, SRM is a little-endian machine with $\WS$-bit ($\WSinBytes$-byte) words.
+All instructions are also $\WS$-bits wide and there is no floating-point support, kernel mode support, or other advanced features.
+
+\subsection{Inputs and Outputs}
+
+\subsubsection{Binary Object Files}
+
+The VM is passed a single file name on its command line as an
+argument.
+Optionally the VM be passed a single command line option, either
+\texttt{-p} or \texttt{-t}.
+
+When given a \texttt{-p} argument followed by a binary object file
+name, the VM loads the binary object file and prints the assembly
+language form of the program, see \secref{sec:printing} details.
+
+When given a \texttt{-t} argument followed by a binary object file
+name, the VM runs the binary object file with tracing output enabled.
+By default, no tracing happens, but users can turn on tracing under
+program control by executing the \texttt{STRA} system call.
+
+The remainder of this section is concerned
+with what the VM does when it only is given a binary object file name
+on its command line as an argument.
+
+The file name given to the VM must be the name of a (readable)
+binary object file containing the program that the VM should execute.
+For example, if the VM's executable is named \texttt{vm} and the program it
+should run is contained in the file named \texttt{test.bof}
+(and both these files are in the current directory), then the VM should
+execute the program in the file \texttt{test.bof} by executing
+the following command in the Unix shell.
+
+\begin{lstlisting}
+  ./vm test.bof
+\end{lstlisting}
+
+The format of a binary object file (BOF) is given in the header file
+\texttt{bof.h}, which is shown in part in \figref{fig:bofh}.
+A BOF starts the header, then the instructions (also in
+binary form) follow, followed by the initial values of data.
+This layout of binary object files is shown in \figref{fig:boffilelayout}.
+
+The header of a binary object file starts with a 4-character field
+that contains the characters ``\lstinline!BOF!''
+(and a null character); this kind of ``magic number'' is commonly used
+to identify files in Unix.
+The magic number is followed (in the BOF header) by the starting address of
+the program's code and the length of the program's code (in bytes), which
+constitutes the ``text'' section of the binary object file.
+These are followed by the starting address of the data section and its
+length (in bytes).
+The data section contains the global/static variables that the program uses.
+Finally, the header contains the initial value for the stack and frame
+pointers, which is the address (in bytes) of the bottom of the runtime
+stack.
+
+\begin{figure}[htbp]
+\LSTCFILESLICE{1-24,75-76}{bof.h}
+\caption{The \texttt{bof.h} header file that defines the format and
+  operations for binary object files.}
+\label{fig:bofh}
+\end{figure}
+
+\begin{figure}[htbp]
+\includegraphics*{BOF_layout.png}
+\caption{The layout of a binary object file.}
+\label{fig:boffilelayout}
+\end{figure}
+
+\subsubsection{Initial/Default Values}
+\label{sec:initial}
+
+The memory of the machine starts at all zero ($0$) values.
+Then the instructions specified by the given binary object file
+(as named on the command line) are loaded into memory,
+starting at address $0$, making the contents of the first $N$ bytes
+(where $N$ is divisible by $\WSinBytes$) 
+of memory be the same as the $N$ bytes following the header itself in
+the binary object file; here $N$ is the same as the header's value of
+the \lstinline!text_length! field.
+Following those $N$ bytes are the bytes of the data section.
+These are loaded into the memory starting at the data start address
+given in the header; thus any initial values are copied from the
+data section of the binary object file into VM's memory.
+
+When the program starts executing:
+\begin{itemize}
+\item
+the register {\GP} is set to the start address of the data section
+given in the header,
+which must be divisible by $\WSinBytes$,
+
+\item
+the registers {\FP} and {\SP} are both is set to the stack bottom
+address given in the header, which must be divisible by $\WSinBytes$
+and strictly greater than the start address of the data section,
+
+\item
+to simulate a call of the program (by the OS) the {\AZERO} register is
+set to the same value as {\FP}, and
+
+\item
+the program counter {\PC} is set to the text section's start address,
+which must be divisible by $\WSinBytes$ and strictly less than the
+data section's start address.
+\end{itemize}
+
+% \clearpage
+
+\subsection{The Running Program's Input and Output}
+
+When the program executes instructions to read or write characters,
+these are read from standard input (\texttt{stdin}) and written to
+standard output (\texttt{stdout}).
+
+However, note that if you want the program to read a character, typing a single
+character (say \texttt{x}) into the terminal (i.e., to the shell) 
+while the program is running will not send that character immediately
+to the program, as standard input is buffered by default.  To send
+characters to the program it is best to use a pipe or file redirection
+in the Unix shell; for example, to send the two characters \texttt{x}
+and \texttt{y} (followed by a newline character)
+to the VM running the program \texttt{progfile.bof} one
+could use the following command at the Unix shell:
+
+\begin{lstlisting}
+  echo xy | ./vm progfile.bof
+\end{lstlisting}
+
+Another command that would accomplish the same thing is to put the
+characters to be input into a file (using a text editor), say
+\texttt{xy-input.txt} and then to use the following Unix command.
+
+\begin{lstlisting}
+  ./vm progfile.bof < xy-input.txt
+\end{lstlisting}
+
+\subsection{Tracing Output}
+
+When used with the \texttt{-t} option or after the \texttt{STRA}
+system call is executed,
+the VM produces output that traces the its execution on \texttt{stdout}.
+(This tracing output can be turned off under program control
+by executing a \texttt{NOTR} system call instruction.)
+(See \secref{sec:syscall} for more information about the \texttt{STRA}
+and \texttt{NOTR} system call instructions.)
+
+The tracing output shows the initial state of the VM, then for each
+instruction executed, it shows the address (in bytes) of that
+instruction and then the assembly language form of that instruction.
+
+The state of the machine shown in tracing output shows:
+the values in the PC, the values of the HI and LO registers (if those
+are not zero) and the values in all the general purpose registers,
+then the memory starting at the address in $\GPR{\GP}$
+with locations containing zeros only indicated with ``\texttt{...}''.
+and then the data between the addresses between $\GPR{\SP}$ and
+the stack bottom address specified in the binary object file.
+The idea is that those addresses should include the runtime stack.
+When showing the memory, locations containing zeros are only
+indicated with ``\texttt{...}''.
+For example, when the binary object file that is assembled from the
+assembly code shown in \figref{fig:test0asm} is executed,
+which is found in the file \texttt{vm\_test0.bof},
+it produces the output shown in \figref{fig:test0output}.
+
+\begin{figure}
+\LSTFILE{vm_test0.asm}
+\caption{The SRM assembly language file \texttt{vm\_test0.asm}.} 
+\label{fig:test0asm}
+\end{figure}
+
+\begin{figure}
+\lstinputlisting[basicstyle=\ttfamily\scriptsize]{vm_test0.out}
+\caption{The tracing output of running the VM (with the \texttt{-t} option)
+  on the file \texttt{vm\_test0.bof}
+  (which is the result of using the assembler on \texttt{vm\_test0.asm}),
+  with the command \texttt{./vm vm\_test0.bof},
+  as would be printed on standard output.} 
+\label{fig:test0output}
+\end{figure}
+
+\subsection{Printing the Program}
+\label{sec:printing}
+
+When the VM is given the argument \texttt{-p} option followed by a
+binary object file name, it first loads the instructions and data from the
+given binary object file, then it prints what was loaded in assembly
+language format, and then the VM exits (without running the program). This
+can be helpful for understanding what a program is doing. This output
+is shown in \figref{fig:test0listing}.
+
+\begin{figure}
+\LSTFILE{vm_test0.lst}
+\caption{The output of running \texttt{./vm -p vm\_test0.bof}. 
+  (where the file \texttt{vm\_test0.bof} is the result of assembling the file
+  \texttt{vm\_test0.asm} that is shown in \figref{fig:test0asm}).} 
+\label{fig:test0listing}
+\end{figure}
+
+\subsection{Error Outputs}
+
+All error messages (e.g., for division by zero) are sent to
+standard error output (\texttt{stderr}).
+
+\subsection{Exit Code}
+
+When the machine halts normally, it exits with a zero error code
+(which indicates success on Unix).  However, when the machine
+encounters an error it halts and exits with a non-zero exit code
+(which indicates failure on Unix).
+
+\section{Architecture}
+
+In SRM, words are $\WS$ bits ($\WSinBytes$ bytes).
+These bits can be interpreted as an integer or as an address.
+The machine is byte addressed but instructions must always be at an
+address that is on a word boundary (i.e., whose address is evenly
+divisible by $\WSinBytes$).
+
+\subsection{Registers}
+
+\subsubsection{General Purpose Registers and Their Names}
+
+The SRM is a register machine with 32
+general purpose registers\footnote{What we call
+``registers'' in this document are simply important concepts that
+simulate what would be registers in a hardware implementation of the
+virtual machine. For the VM program, these registers would be implemented
+as variables.},
+numbered 0 to 31 (inclusive).
+These are all $\WS$-bit registers.
+Since there are 32 registers,
+instructions use $\LOGofRegs$ bits to specify them.
+
+Register 0 cannot be written to, and when read its value is always 0.
+
+Conventions (from the MIPS architecture \cite{Kane-Heinrich92}) are
+followed for these registers and their names,
+as shown in \tabref{tab:registers}.
+The names shown in \tabnref{tab:registers} are conventional ones.
+
+\begin{table}[htb]
+  \caption{SRM Register Numbers, Use, and Names}
+  \label{tab:registers}
+\begin{center}
+\begin{tabular}{| l | l | l |}
+  \hline
+  Number & Use & Name\\
+  \hline
+  $0$ & always 0 (can't write to this register!) & \\
+  $1$ & assembler temporary & \NAMEDREG{at} \\
+  $2-3$ & function results & \NAMEDREG{v0}, \NAMEDREG{v1} \\
+  $4-7$ & function arguments & \NAMEDREG{a0}$-$\NAMEDREG{a3} \\
+  $8-15$ & temporaries & \NAMEDREG{t0}$-$\NAMEDREG{t7} \\
+  $16-23$ & temporaries & \NAMEDREG{s0}$-$\NAMEDREG{s7} \\
+  $24-25$ & temporaries & \NAMEDREG{t8}, \NAMEDREG{t9} \\
+  $26-27$ & reserved for use by OS (don't use!) & \\
+  $28$ & globals pointer & $\GP$ \\
+  $29$ & stack pointer & $\SP$ \\
+  $30$ & frame pointer & $\FP$ \\
+  $31$ & return address & $\RA$ \\
+  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsubsection{Special Purpose Registers}
+
+SRM also has a few special registers. The registers are named:
+
+\begin{itemize}
+\item
+  {\PC}, the program counter which holds the address of the next
+  instruction to execute,
+
+\item
+  {\HI}, the high part (i.e., most significant bits) of the result of a multiplication or the
+  remainder in a division,
+
+\item
+  {\LO}, the low part (i.e., least significant bits) of the result of
+  a multiplication or the quotient in a division.
+\end{itemize}
+
+The $\PC$ register is manipulated by jump instructions.
+The $\HI$ and $\LO$ registers are read by instructions that move their contents into another register.
+
+\subsubsection{Calling Convention}
+
+The calling convention on the SRM follows the calling convention on
+the MIPS processor.
+
+That is, the caller must save registers $1-15$, and $24-25$
+if they will be needed after a call (and then restores them when
+needed).
+
+The callee saves (and restores before it returns) registers $16-23$
+and $29-31$, if it uses (writes) them.
+
+(Furthermore, register $0$ cannot be changed and registers $1$ and
+$28$ should not be changed by a hand-written routine.
+Registers $26-27$ should not be changed by user code.)
+
+Note that the jump-and-link (\texttt{JAL}) instruction
+does not save any registers except the $\PC$,
+and it will save that in register $31$.
+
+\subsection{Binary Instruction Format}
+
+In object code,
+all instructions are one word long and start with a 6-bit opcode.
+However, instructions may have one of several formats, with the format
+depending on the opcode (called ``op'' below).
+The fields of each instruction format shown in \tabref{tab:instrfmts}
+are followed by their width in bits;
+for example the op field is 6 bits wide.
+
+\begin{table}[htb]
+  \caption{SRM Instruction Formats}
+  \label{tab:instrfmts}
+\begin{itemize}
+\item Register/computational type instruction format: \\
+\begin{tabular}{|c|p{6ex}{c}|p{6ex}{c}|p{6ex}{c}|p{10ex}|p{9ex}|}
+  \hline
+  op:6 & \multicolumn{1}{|c|}{rs:5} & \multicolumn{1}{|c|}{rt:5} & \multicolumn{1}{|c|}{rd:5} & \multicolumn{1}{|c|}{shift:5} & \multicolumn{1}{|c|}{func:6} \\
+  \hline
+\end{tabular}
+
+\item System call instructions, whose format is a variant of the register type
+instruction format, but with a func field value of 12: \\
+\begin{tabular}{|c|p{6ex}{c}|p{6ex}{c}|p{6ex}{c}|p{10ex}|p{9ex}|}
+  \hline
+  op:6 & \multicolumn{4}{|c|}{~~~~~~~~~~~~~code:20~~~~~~~~~~~~~~~~} & \multicolumn{1}{|c|}{func:6} \\
+  \hline
+\end{tabular}
+
+\item
+Immediate operand type instruction format: \\
+\begin{tabular}{| c | p{6ex}{c} | p{6ex}{c} | p{16ex} |}
+  \hline
+  op:6 & \multicolumn{1}{|c|}{rs:5} & \multicolumn{1}{|c|}{rt:5} & \multicolumn{1}{c|}{~~~~~~~~~immed:16~~~~~~~~~~~} \\
+  \hline
+\end{tabular}
+
+\item
+Jump type instruction format: \\
+\begin{tabular}{| c | p{26ex}|}
+  \hline
+  op:6 & \multicolumn{1}{c|}{~~~~~~~~~~~~~~~~~~~~~addr:26~~~~~~~~~~~~~~~~~~~~~~~} \\
+  \hline
+\end{tabular}
+\end{itemize}
+\end{table}
+
+The list of instructions and details on their execution appears in
+Appendix \ref{appsec:A}.
+
+\subsection{Machine Cycles}
+
+The SRM instruction cycle conceptually does the following for each
+instruction:
+
+\begin{enumerate}
+\item
+  Let $\IR$ be the instruction at the location that {\PC} indicates.
+  (Note that $\IR$ could be considered to be the contents of a register.)
+
+\item
+  The {\PC} is made to point to the next instruction
+  (i.e., it is set to the address $\PC + \WSinBytes$).
+
+\item
+  Then the instruction in $\IR$ is executed.
+  The op component of this instruction ($\IR$.op) indicates the operation
+  to be executed.
+  For example, if $\IR$.op encodes the instruction JR,
+  then the machine jumps to the specified address by
+  setting the $\PC$ register (to the contents of the given register).
+\end{enumerate}
+
+\subsection{Size Limits}
+
+The following constant defines the size of the memory for the VM.
+
+\LSTCFILESLICE{10-10}{machine.h}
+
+You might need to copy this definition into your program.
+
+Note that \lstinline!BYTES_PER_WORD! is defined to be 4 in
+\lstinline!machine_types.h!, see \figref{fig:machinetypes}.
+
+\subsection{Invariants}
+
+The VM enforces the following invariants and will halt with an error
+message (written to stderr) if one of them is violated:
+
+\newcommand{\BPW}{\mbox{\texttt{BYTES\_PER\_WORD}}}
+\begin{itemize}
+\item
+  $\PC \MOD \BPW = 0$,
+
+\item
+  $\GPR{\GP} \MOD \BPW = 0$,
+
+\item
+  $\GPR{\SP} \MOD \BPW = 0$,
+
+\item
+  $\GPR{\FP} \MOD \BPW = 0$,
+
+\item
+  $0 \leq \GPR{\GP}$,
+
+\item
+  $\GPR{\GP} < \GPR{\SP}$,
+
+\item
+  $\GPR{\SP} \leq \GPR{\FP}$,
+
+\item
+  $\GPR{\FP} < \mbox{\texttt{MEMORY\_SIZE\_IN\_BYTES}}$,
+   
+\item
+  $0 \leq \PC$, 
+
+\item
+  $\PC < \mbox{\texttt{MEMORY\_SIZE\_IN\_BYTES}}$, and
+
+\item
+  $\GPR{0} = 0$.
+\end{itemize}
+
+\appendix
+\section{Appendix A}
+\label{appsec:A}
+
+In the following tables, italicized names (such as $s$) are
+meta-variables that refer to integers.
+If an instruction's field is
+notated as $-$, then its value does not matter (we use $0$ as a
+placeholder for such values in examples).
+
+All numbers appearing in the following table are in decimal (base 10) notation.
+
+\subsection{Register/Computational Instructions}
+
+Note that all of the instructions in table \tabref{tab:rformatinstrs}
+have an opcode of $0$,
+and a function specified by the func field. They each also have 3 register
+arguments: rs, rt, and rd.
+The contents of the general purpose register $r$ is
+notated as $\GPR{r}$ in the table.
+All numbers in the table are in decimal notation.
+
+All arithmetic and logical operations are performed as for C
+\textbf{int} values.
+However, the right shift works on the contents of the register
+$\GPR{t}$ in a logical manner, as if it were an \textbf{unsigned int},
+so it should shift in zeros from the left.
+
+
+\begin{table}[htbp]
+\caption{Register Format Instructions}
+\label{tab:rformatinstrs}
+\begin{tabular}{|l|l|c|c|c|c|l|p{9cm}|}
+\hline
+~       & ~  & ~  & ~  & ~  & ~     &      & Comment \\
+Name    & op & rs & rt & rd & shift & func & (Explanation) \\
+\hline
+ADD     & 0  &$s$ &$t$ &$d$  & -    & 33 & Add: $\GPR{d} \GETS \GPR{s} + \GPR{t}$ \\
+\hline
+SUB     & 0  &$s$ &$t$ &$d$  & -    & 35 & Subtract: $\GPR{d} \GETS \GPR{s} - \GPR{t}$ \\
+\hline
+MUL     & 0  &$s$ &$t$ & -   & -    & 25 & Multiply: Multiply
+$\GPR{s}$ and $\GPR{t}$, \\
+& & & & & & & putting the least significant bits in $\LO$ \\
+& & & & & & & and the most significant bits in $\HI$. \\
+& & & & & & & $(\HI,\LO) \GETS \GPR{s} \times \GPR{t}$ \\
+\hline
+DIV     & 0  &$s$ &$t$ & -   & -    & 27 & Divide (remainder in $\HI$, quotient in $\LO$): \\
+        &    &    &    &     &      &    & $\HI \GETS \GPR{s} \MOD \GPR{t}$ \\
+        &    &    &    &     &      &    & $\LO \GETS \GPR{s} / \GPR{t})$ \\
+\hline
+MFHI    & 0  & -  & -  & $d$ & -    & 16 & Move from HI: $\GPR{d} \GETS \HI$ \\
+\hline
+MFLO    & 0  & -  & -  & $d$ & -    & 18 & Move from LO: $\GPR{d} \GETS \LO$ \\
+\hline
+AND     &  0  &$s$ &$t$ & $d$ & -    & 36 & Bitwise And: $\GPR{d} \GETS \GPR{s} \AND \GPR{t}$ \\
+\hline
+BOR     &  0  &$s$ &$t$ & $d$ & -    & 37 & Bitwise Or: $\GPR{d} \GETS \GPR{s} \OR \GPR{t}$ \\
+\hline
+NOR     &  0  &$s$ &$t$ & $d$ & -    & 39 & Bitwise Not-Or: $\GPR{d} \GETS \neg(\GPR{s} \OR \GPR{t})$ \\
+\hline
+XOR     &  0  &$s$ &$t$ & $d$ & -    & 38 & Bitwise Exclusive-Or: $\GPR{d} \GETS \GPR{s} \XOR \GPR{t}$ \\
+\hline
+SLL     &  0  & - &$t$ & $d$ & $h$  & 0 & Shift Left Logical: $\GPR{d} \GETS \GPR{t} \LSHIFT h$ \\
+\hline
+SRL     &  0  & - &$t$ & $d$ & $h$  & 3 & Shift Right Logical: $\GPR{d} \GETS \GPR{t} \RSHIFT h$ \\
+\hline
+JR      &  0  &$s$ & 0 &  0  &  0   & 8 & Jump Register: $\PC \GETS \GPR{s}$ \\
+\hline
+SYSCALL &  0  & -  & - & -   & -   & 12 & System Call: (see \tabref{tab:syscalls}) \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\subsection{Immediate Type Instructions}
+
+The instructions in \tabref{tab:immedinstrs} may have up to 2 register
+arguments, and all have an immediate operand, which is a 16 bit value.
+
+For arithmetic operations, the immediate value is sign-extended (to an
+\textbf{int} value),
+which is written in the explanations using the function ``{\SIGNEXTENDNAME}.'' 
+For example, suppose $i$ is $-1$, which is FFFF in hexadecimal
+notation;
+then $\SIGNEXTEND{i}$ is FFFFFFFF in hexadecimal, which still
+represents $-1$.
+
+However, for logical operations, the immediate value is zero-extended,
+which is written in the explanations using the function ``{\ZEROEXTENDNAME}.''
+For example, suppose $i$ is $-1$, which is FFFF in hexadecimal
+notation;
+then $\ZEROEXTEND{i}$ is 0000FFFF in hexadecimal notation.
+
+For the branches, the immediate value, $o$ is first shifted left 2
+bits (multiplied by 4) and then sign-extended, which is written as
+``{\FORMOFFSETNAME}'' in the table.
+(Thus $\FORMOFFSET{o} = \SIGNEXTEND{4 \times o}$.)
+Note that the resulting address is added to the address of the
+instruction following the currently executing instruction, not the
+address of the instruction itself, since the $\PC$ has already been advanced.
+(As a simplification, the opcode for the BLTZ instruction is different
+from that found in the MIPS architecture \cite{Kane-Heinrich92}.)
+
+For loads and stores, $\MEMORY{a}$ denotes the contents of the
+machine's memory at the byte address $a$.
+
+\begin{table}[htbp]
+\caption{Immediate format instructions:}
+\label{tab:immedinstrs}  
+\begin{tabular}{|l|r|c|c|c|p{11cm}|}
+\hline
+~    &      & ~  & ~  & ~     & Comment \\
+Name & op   & rs & rt & immed & (Explanation) \\
+\hline
+ADDI  & 9   &$s$ &$t$ & $i$ & Add immediate: $\GPR{t} \GETS \GPR{s} + \SIGNEXTEND{i}$ \\
+\hline
+ANDI & 12    &$s$ &$t$ & $i$ & Bitwise And immediate: $\GPR{t} \GETS \GPR{s} \AND \ZEROEXTEND{i}$ \\
+\hline
+BORI & 13    &$s$ &$t$ & $i$ & Bitwise Or immediate: $\GPR{t} \GETS \GPR{s} \OR \ZEROEXTEND{i}$ \\
+\hline
+XORI & 14    &$s$ &$t$ & $i$ & Bitwise Xor immediate: $\GPR{t} \GETS \GPR{s} \XOR \ZEROEXTEND{i}$ \\
+\hline
+BEQ & 4     &$s$ &$t$ & $o$ & Branch on Equal: $\IFO{\GPR{s} = \GPR{t}}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+BGEZ & 1    &$s$ & 1  & $o$ & Branch $\geq$ 0: $\IFO{\GPR{s} \geq 0}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+BGTZ & 7    &$s$ & 0  & $o$ & Branch $>$ 0: $\IFO{\GPR{s} > 0}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+BLEZ & 6    &$s$ & 0  & $o$ & Branch $\leq$ 0: $\IFO{\GPR{s} \leq 0}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+BLTZ & 8    &$s$ & 0  & $o$ & Branch $<$ 0: $\IFO{\GPR{s} < 0}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+BNE  & 5    &$s$ &$t$ & $o$ & Branch Not Equal: $\IFO{\GPR{s} \neq \GPR{t}}{\PC \GETS \PC + \FORMOFFSET{o}}$ \\
+\hline
+LBU  & 36   &$b$ &$t$ & $o$ & Load Byte Unsigned: \\
+     &      &    &    &     & $\GPR{t} \GETS \ZEROEXTEND{\MEMORY{\GPR{b} + \FORMOFFSET{o}}}$ \\
+\hline
+LW   & 35   &$b$ &$t$ & $o$ & Load Word ($\WSinBytes$ bytes): \\
+     &      &    &    &     & $\GPR{t} \GETS \MEMORY{\GPR{b} + \FORMOFFSET{o}}$ \\
+\hline
+SB   & 40   &$b$ &$t$ & $o$ & Store Byte (least significant byte of $\GPR{t}$): \\
+     &      &    &    &     & $\MEMORY{\GPR{b} + \FORMOFFSET{o}} \GETS \GPR{t}$ \\
+\hline
+SW   & 43   &$b$ &$t$ & $o$ & Store Word ($\WSinBytes$ bytes): \\
+     &      &    &    &     & $\MEMORY{\GPR{b} + \FORMOFFSET{o}} \GETS \GPR{t}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Jump Type Instructions}
+
+The instructions in \tabref{tab:jumpinstrs} have a $\WSminusOP$-bit field ``addr''
+which is used to form the address to jump to.
+Forming this address is done by left-shifting the given ``addr''
+field, $a$, by 2 bits,
+and then concatenating the (4) high bits of the $\PC$ with those
+$\WSminusOP+2$ bits to form a $\WS$-bit address.
+This is written ``$\FORMADDRESS{\PC,a}$'' in the table.
+For example if $a$ is DECADE in hexadecimal notation, and $\PC$ is
+FFFACADE in hexadecimal notation, then $\FORMADDRESS{\PC}{a}$ is F37B2B78
+in hexadecimal notation. (Note: if the high-order 4 bits of $\PC$
+are 0, then $\FORMADDRESS{PC}{a}$ is equivalent to left-shifting $a$
+by 2 bits.)
+
+\begin{table}[htbp]
+\caption{Jump Type Instructions}
+\label{tab:jumpinstrs}  
+\begin{tabular}{|r|l|l|p{11cm}|}
+\hline
+~      & ~  & ~    & Comment \\
+Name   & op & addr & (Explanation) \\
+\hline
+JMP    & 2  & a    & Jump: $\PC \GETS \FORMADDRESS{PC}{a}$ \\
+\hline
+JAL    & 3  & a    & Jump and Link: $\GPR{\RA} \GETS \PC; \PC \GETS \FORMADDRESS{\PC}{a}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+The Jump and Link (JAL) instruction does a subroutine call. It does
+not explicitly manipulate the runtime stack.
+% [[[Put more in about calling conventions here.]]]
+
+\subsection{System Calls}
+\label{sec:syscall}
+
+System calls are used to provide operating system services.
+System calls are made by instructions with op 0 and func 12 having the
+following format (with code field made of the 20 bits of what would
+be the rs, rt, rd, and shift fields of a register type instruction,
+all combined).
+The code field is used to specify the service requested.
+
+System calls include exiting a program and various kinds of printing
+and reading of character data (bytes).
+These are described in \tabref{tab:syscalls},
+using C library equivalents.
+In the table, an entry of $-$ means that the contents of argument registers 
+is not specified.
+Otherwise, the contents of particular argument registers are used to
+pass actual arguments to the system calls (the program must load the
+actual argument values into those registers before making the call).
+(Recall that the correspondence between named registers and register
+numbers is given in \tabref{tab:registers}.)
+All printing done by these instructions
+is to the VM's standard output (stdout) and
+reading is from the VM's standard input (stdin).
+
+\begin{table}[htbp]
+\caption{System Calls}
+\label{tab:syscalls}
+\begin{tabular}{|l|l|l|l|}
+\hline
+code & name  & arg. reg. & Effect (in terms of C std. library) \\
+\hline
+10   & EXIT  & - & \texttt{exit(0) // halt} \\
+\hline
+ 4   & PSTR  & \AZERO & $\GPR{\VZERO} \GETS $ \texttt{printf("\%s",\&$\MEMORY{\GPR{\AZERO}}$)} \\
+\hline
+ 5   & PINT  & \AZERO & $\GPR{\VZERO} \GETS $ \texttt{printf("\%d",\GPR{\AZERO})} \\
+\hline
+11   & PCH   & \AZERO & $\GPR{\VZERO} \GETS $\texttt{fputc($\GPR{\AZERO}$,stdout)} \\
+\hline
+12   & RCH   & -   & $\GPR{\VZERO} \GETS $ \texttt{getc(stdin)} \\
+\hline
+256   & STRA & -  & \textrm{start VM tracing; start tracing output} \\
+\hline
+257   & NOTR & -  & \textrm{no VM tracing; stop the tracing output} \\
+\hline
+\end{tabular}
+\end{table}
+
+In the PSTR instruction, the C standard library function
+\texttt{printf} will expect a C pointer to characters as its
+argument; this should be the address of those character's
+representations in the memory starting at the VM address given by the
+contents of $\GPR{\AZERO}$.
+
+\section{Appendix B: Hints}
+
+\subsection{Overall Structure of the Code}
+
+To implement the SRM VM, the first thing to do is to decide on some
+data structures to represent the VM's state: especially the memory and
+registers.  You may want to represent the VM's memory using a
+definition like that in \figref{fig:memoryrep}.
+\begin{figure}[hbtp]
+\begin{lstlisting}
+#include "machine_types.h"
+#include "instruction.h"
+// a size for the memory (2^16 bytes = 64K)
+#define MEMORY_SIZE_IN_BYTES (65536 - BYTES_PER_WORD)
+#define MEMORY_SIZE_IN_WORDS (MEMORY_SIZE_IN_BYTES / BYTES_PER_WORD)
+
+static union mem_u {
+     byte_type bytes[MEMORY_SIZE_IN_BYTES];
+     word_type words[MEMORY_SIZE_IN_WORDS];
+     bin_instr_t instrs[MEMORY_SIZE_IN_WORDS];
+} memory;
+\end{lstlisting}
+\caption{A possible way to represent the memory of the VM, which
+  allows access to the same storage as bytes, words, or binary instructions.}
+\label{fig:memoryrep}
+\end{figure}
+With this definition,
+the VM's memory is represented as 3 arrays that share the same
+storage: \lstinline!memory.bytes!, \lstinline!memory.words!, and
+\lstinline!memory.instrs!.  For example,
+the 4 bytes at byte address 36 can be accessed as
+\lstinline!memory.bytes[36]!
+or as \lstinline!memory.words[9]! or as \lstinline!memory.instrs[9]!.
+This union definition allows VM's code to decide what view it wants
+of the storage at each point in the implementation,
+and whatever is changed in that view is
+seen by all the other views.
+Using a union in this way avoids lots of casting and bit manipulation.
+Note that the C compiler considers \lstinline!memory.bytes! to have
+the type \lstinline!byte_type[]!,
+and \lstinline!memory.words! to have the type \lstinline!word_type[]!,
+and \lstinline!memory.instrs! to have the type \lstinline!bin_instr_t[]!.
+
+The registers can be \lstinline!word_type! variables
+(where \lstinline!word_type! is defined in
+\lstinline!machine_types.h!),
+or an array of them.
+
+Once the representation for memory and the registers is settled,
+implement the loading process and get the \texttt{-p} option to work.
+There is code in the disassembler that can be used as a model of what
+to do.
+
+To read from the binary object files (BOFs) you should use the
+functions in the bof module.
+In particular, use \lstinline!bof_read_open! to open such a file,
+use \lstinline!bof_read_header! to read and return the header from a
+BOF, then read each of the instructions using
+\lstinline!instruction_read! (from the instruction module),
+and \lstinline!bof_read_word! to read words in the data section of
+the BOF.
+
+You will find the function \lstinline!instruction_assembly_form!
+from the instruction module
+helpful in doing the printing of instructions. See the code in the
+disassembler (\texttt{disasm.c} in particular) for a model of how to
+use it.
+
+After getting the \texttt{-p} option to work,
+you need to implement the basic fetch-execute cycle for the VM
+(without the \texttt{-p} option):
+make a function that executes a single instruction and handles the tracing
+and call the function to execute each instruction in a loop.
+
+To implement the function that executes a single instruction,
+have that function decide between the possible instructions
+(using the functions from the instruction module) and
+in each case carry out the effect of the instruction as described in
+the ``Simplified RISC Machine Manual'', which is available on
+Webcourses.
+You can see the provided code in the
+\lstinline!instruction_assembly_form!
+function in the instruction module as an example of how to
+decide what an instruction is.
+
+\subsection{Writing Your Own Tests}
+
+It is often helpful to write your own tests to execute just one or two
+instructions during testing of the VM.
+However, be sure to include an \texttt{EXIT} instruction in your test to
+stop your program's execution!
+
+To write your own tests you can use the provided assembler,
+since the VM only takes binary object files as inputs.
+
+The SRM assembler can be compiled using the provided Makefile and the
+following command.
+\begin{lstlisting}
+make asm
+\end{lstlisting}
+
+We also provide documentation for the
+assembly language in the course files on webcourses; see the file
+named ``\texttt{srm-asm.pdf}''.
+
+\subsection{Disassembler}
+
+We also provide a disassembler, that does something similar to running the
+virtual machine with the \texttt{-p} option; this program can be built
+using the Makefile by issuing the command \texttt{make disasm}.
+The way that the disassembler does its output, using the
+\texttt{instruction} module, can be helpful in writing the code for
+the \texttt{-p} option of the VM.
+
+\subsection{Provided Files}
+
+We provide all the source files used to build the assembler and the
+disassembler. Many of these can be helpful in writing your VM
+implementation. The following describes some of these.
+
+\subsubsection{Makefile}
+
+The provided \texttt{Makefile} describes how to compile and link programs
+and run tests. This \texttt{Makefile} tells the GNU program
+\texttt{make} \cite{GNUMake}
+about dependencies between files that \texttt{make} uses
+to decide when targets need to be built.
+
+You should edit the Makefile's definition of \texttt{VM\_OBJECTS};
+change that to be a complete list of the \texttt{.o} files
+that are needed to build your virtual machine.
+The list present in the Makefile for \texttt{VM\_OBJECTS} 
+is what the course staff used,
+but you might, for example, combine the main function,
+which was in our files \texttt{machine\_main.c} and
+\texttt{machine.c} (none of these are provided to you)
+into a single file named \texttt{vm.c}, in which case would replace
+our \texttt{machine\_main.o} and \texttt{machine.o} with your \texttt{vm.o}
+On the other hand, you will need to leave the object file names in the
+list that your code uses, such as \texttt{bof.o} and \texttt{utilities.o}.
+If you receive an error message from the Unix linker/loader
+(\texttt{ld}) about an ``undefined reference'' to a function or a
+piece of data, then the solution is likely to include the relevant
+object file in the list of \texttt{VM\_OBJECTS}.
+
+You should not need to edit anything in the bottom half of the
+Makefile, which is the ``developer's section'' used by the course staff.
+
+There are several useful targets in the Makefile that can be used with
+the \texttt{make} command. A \emph{target} is a name given on the
+command line to \texttt{make}; for example \texttt{vm} is a target,
+and running the command \texttt{make vm} should compile and link the
+code needed to build your VM and create an executable program in the
+file \texttt{vm} (or \texttt{vm.exe} on Windows).  The following is a
+list of the targets in the Makefile that may be useful.
+
+\newcommand{\bft}[1]{\textbf{\texttt{#1}}}
+\begin{description}
+\item{\bft{file.o}} compiles \texttt{file.c} if it (or \texttt{file.h}) is
+  newer than \texttt{file.o}, producing a new copy of \texttt{file.o}.
+  This works for any file name not just ``\texttt{file}'', as the
+  Makefile has a general rule to compile \texttt{.c} files into
+  \texttt{.o} files.
+
+\item{\bft{vm}} compiles (if necessary) all the .o files named in the macro
+  \texttt{VM\_OBJECTS} and links them together into an executable
+  named \texttt{vm} (or \texttt{vm.exe} on Windows).
+
+\item{\bft{vm\_test1.myo}} runs your virtual machine program (\texttt{./vm})
+  on the input \texttt{vm\_test1.bof} and sends the (standard) output
+  (and standard error output) to \texttt{vm\_test1.myo}.
+  This works for any test file, not just ``\texttt{vm\_test1.bof}'' as
+  the Makefile has a general rule for this.
+
+\item{\bft{vm\_test1.myp}} runs your virtual machine program (\texttt{./vm})
+  with the \texttt{-p} option on the input \texttt{vm\_test1.bof}
+  and sends the (standard) output
+  (and standard error output) to \texttt{vm\_test1.myp}.
+  This works for any test file, not just ``\texttt{vm\_test1.bof}'' as
+  the Makefile has a general rule for this.
+
+\item{\bft{check-vm-outputs}} runs all of the provided tests in the
+  \texttt{.bof} files and produces the corresponding \texttt{.myo}
+  files using your VM (in \texttt{./vm}), and compares each one to the
+  expected output in the corresponding \texttt{.out} file using the
+  \texttt{diff} command. Each such test passes if no differences are detected.
+
+\item{\bft{check-lst-outputs}} runs all of the provided tests in the
+  \texttt{.bof} files and produces the corresponding \texttt{.myp}
+  files using your VM (as \texttt{./vm -p}), and compares each one to the
+  expected output in the corresponding \texttt{.lst} file using the
+  \texttt{diff} command. Each such test passes if no differences are detected.
+
+\item{\bft{check-outputs}} runs all of the provided tracing and listing
+  tests (using the targets
+  \texttt{check-lst-outputs} and \texttt{check-vm-outputs}).
+
+\item{\bft{submission.zip}} runs all of the provided tests (using the
+  \texttt{check-outputs} target) and creates a zip file that can be
+  submitted for the assignment including your code and outputs from
+  the tests.
+
+\item{\bft{clean}} removes all the compiled object files (\texttt{*.o}) and testing
+  output files (\texttt{*.myo} and \texttt{*.myp}) as well as the
+  executable VM (files named \texttt{vm} and \texttt{vm.exe}) and the
+  submission zip file (\texttt{submission.zip}). This allows you to
+  start over from scratch, forcing \texttt{make} to build the do the
+  work specified for the targets given, instead of thinking that they
+  are up to date. (This is especially useful if some dependencies are
+  not captured in the Makefile.)
+\end{description}
+
+\subsubsection{C Typedefs for SRM Machine Types}
+
+We provide a module, \lstinline!machine_types! (the header
+\lstinline!machine_types.h! is shown in \figref{fig:machinetypes}),
+which defines some C equivalents for important types of data in the SRM.
+
+\begin{figure}
+\LSTCFILE{machine_types.h}
+\caption{The header file of the \texttt{machine\_types} module, which
+  provides some basic definitions for the VM.}
+\label{fig:machinetypes}
+\end{figure}
+
+\subsubsection{Other modules provided}
+
+The following gives a brief summary of the other provided code
+modules, each of which consists of a \texttt{.c} file and a
+\texttt{.h} file.
+
+\begin{itemize}
+\item
+  \lstinline!bof!, which describes binary object files,
+
+\item
+  \lstinline!file_location!, which groups file names and line numbers,
+
+\item
+  \lstinline!instruction!, which describes machine instructions and
+  provides several useful utilities for creating and printing
+  instructions,
+
+\item
+  \lstinline!regname!, which provides access to the symbolic names of
+  the SRM's general purpose registers,
+  
+\item
+  \lstinline!utilities!, which describes several functions for error
+  output, including \lstinline!bail_with_error!.
+\end{itemize}
+
+In addition, we provide code to build the assembler (including many of
+the above and also the files
+\lstinline!asm_main.c!, \lstinline!asm.y!, \lstinline!asm_lexer.l!,
+\lstinline!asm_unparser.[ch]!, \lstinline!ast.[ch]!,
+\lstinline!lexer.[ch]!, \lstinline!pass1.[ch]!,
+\lstinline!assemble.[ch]!, and \lstinline!id_attrs!)
+and the disassembler (including many mentioned above and also
+\lstinline!disasm_main.c!, \lstinline!disasm.[ch]!).
+
+You can use any of these provided files in your solution.
+
+\bibliography{srm-vm.bib}
+
+\end{document}

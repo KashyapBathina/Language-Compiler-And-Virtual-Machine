@@ -1,0 +1,35 @@
+% $Id: hw3-declerrtest6.spl,v 1.4 2024/10/07 21:38:11 leavens Exp $
+begin
+  var x, y, z;
+  begin
+    begin
+      begin
+        begin
+          begin
+            begin
+              x := 0;
+              y := 2;
+              read z;
+              if z < x
+              then
+                begin
+                  while z < x
+                  do
+                    if z < y
+                    then
+		      begin
+                        z := z+y*w  % error, undeclared identifier!
+                      end
+                    else
+                      z := z+1
+                    end
+		  end
+		end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end.

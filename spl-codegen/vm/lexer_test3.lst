@@ -1,0 +1,6 @@
+Address Instruction
+     0: ADDI $sp, 0, 93
+     1: ADDI $sp, 0, 93
+     2: ADDI $sp, 0, -93
+     3: EXIT 0
+     512: 16	     513: 0	        ...     

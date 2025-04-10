@@ -1,0 +1,47 @@
+Address Instruction
+     0: LIT $sp, 0, 0
+     1: SUB $sp, -1, $sp, 0
+     2: AND $sp, -2, $sp, -3
+     3: SRI $sp, 3
+     4: BORI $sp, 0, 0x8
+     5: JREL 3	# target is word address 8
+     6: NOR $ra, -1, $sp, 0
+     7: XOR $sp, -2, $sp, -1
+     8: MUL $r5, 0
+     9: CFHI $sp, 0
+    10: CFLO $fp, 0
+    11: LIT $sp, -1, 1
+    12: LWR $r5, $sp, -1
+    13: SRI $sp, 1
+    14: DIV $sp, 0
+    15: ADDI $sp, 0, 13
+    16: ADD $gp, 0, $gp, 0
+    17: CALL 19	# target is word address 19
+    18: EXIT 0
+    19: ANDI $sp, 0, 0xff
+    20: XORI $sp, 0, 0x0
+    21: BEQ $sp, 0, 2	# target is word address 23
+    22: BNE $sp, 0, 333	# target is word address 355
+    23: BGEZ $sp, 0, 3	# target is word address 26
+    24: ADDI $sp, 0, 11
+    25: BGTZ $sp, 1, -2	# target is word address 23
+    26: BLTZ $sp, 1, 2	# target is word address 28
+    27: BLEZ $sp, 0, 2	# target is word address 29
+    28: CPW $sp, 0, $gp, 1
+    29: LWR $fp, $sp, 0
+    30: ARI $sp, -1
+    31: CPW $sp, 0, $gp, 1
+    32: ADDI $sp, 0, -1
+    33: SUB $sp, 0, $sp, 0
+    34: ARI $sp, -1
+    35: CPW $gp, 2, $sp, 0
+    36: SLL $sp, 0, 8
+    37: BOR $sp, 0, $gp, 0
+    38: PCH $sp, 1
+    39: PCH $sp, 0
+    40: RTN 
+    41: SUB $sp, 0, $sp, 0
+    42: DIV $sp, 0
+    43: EXIT 1
+    2048: 10	    2049: 1025	    2050: 89	    2051: 0	    2052: 16	
+    2053: 0	        ...     

@@ -1,0 +1,11 @@
+begin
+  const y = 122, z = 123;
+  var a, b, c;
+  begin
+    a := 3;
+    y := ((z * a) + (b / c));
+    print x
+  end
+end
+.
+hw3-declerrtest8.spl: line 8 identifier "x" is not declared!

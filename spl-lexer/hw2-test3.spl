@@ -1,0 +1,17 @@
+% $Id: hw2-test3.spl,v 1.5 2024/10/08 11:57:56 leavens Exp leavens $
+begin
+  const test3 = 3, temp = 80;
+  % note that for lexical analysis (only) an input file can have syntax errors!
+  const ten = 10.3402, five 5.765e22;  % syntax errors!
+  var x, y;
+  proc swap;   % the semicolon is a syntax error in SPL!
+  var temp;  % syntax error, should be a begin here in SPL!
+  begin
+    temp := x;
+    x := y;
+    y := temp
+  end;
+  x := 3402;
+  y := 99;
+  call swap
+end.

@@ -1,0 +1,15 @@
+% $Id: hw3-scope-test2.spl,v 1.6 2024/09/20 19:32:24 leavens Exp $
+begin
+  var arg;
+  proc countDown
+  begin
+    print arg;
+    if arg >= 0
+    then
+      arg := arg - 1;
+      call countDown
+    end
+  end;
+  arg := 4;
+  call countDown
+end.

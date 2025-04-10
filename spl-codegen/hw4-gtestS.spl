@@ -1,0 +1,11 @@
+% $Id: hw4-gtestS.spl,v 1.1 2024/11/12 02:04:20 leavens Exp $
+begin
+  var ff;
+  ff := 44;
+  if divisible ff by 11
+  then
+    print 23  % prints 23
+  else
+    print 97
+  end
+end.

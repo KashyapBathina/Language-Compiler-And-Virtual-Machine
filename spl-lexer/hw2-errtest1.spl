@@ -1,0 +1,6 @@
+% $Id: hw2-errtest1.spl,v 1.1 2024/10/06 12:06:48 leavens Exp $
+% Some illegal characters
+a_bad_id
+<>
+procedure
+!

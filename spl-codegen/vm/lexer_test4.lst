@@ -1,0 +1,6 @@
+Address Instruction
+     0: LIT $sp, -1, 122
+     1: SRI $sp, 1
+     2: MUL $sp, 0
+     3: EXIT 0
+    1024: 0	        ...     

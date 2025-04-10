@@ -1,0 +1,322 @@
+% $Id: srm-asm.tex,v 1.29 2023/09/20 19:43:09 leavens Exp $
+\documentclass[11pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{textcomp} %required to set upquote flag and for luximono
+%\usepackage[scaled=0.81]{luximono}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{ragged2e}
+\lstset{language=C,basicstyle=\ttfamily,commentstyle=\rmfamily\itshape}
+\lstset{morecomment=[l]{//}, %use comment-line-style!
+        morecomment=[s]{/*}{*/}} %for multiline comments
+\lstset{upquote=true} %FH
+% The following is needed for C programs
+\lstset{showspaces=false,showstringspaces=false}
+%\lstset{mathescape=true}
+\input{boxed-figure-new}
+% getting files for figures
+\newcommand{\LSTFILE}[1]{
+\lstinputlisting[basicstyle=\small\ttfamily]{#1}
+}
+\newcommand{\LSTFILESLICE}[2]{
+\lstinputlisting[basicstyle=\small\ttfamily,linerange={#1}]{#2}
+}
+%
+\newcommand{\LSTCFILE}[1]{
+\lstinputlisting[language=C,basicstyle=\small\ttfamily]{#1}
+}
+\usepackage[bookmarks=false]{hyperref}
+%\usepackage{varioref}  % doesn't work with hyperref, it seems, sigh
+%\renewcommand{\reftextfacebefore}{on the previous page}
+%\renewcommand{\reftextfaceafter}{on the next page}
+\newcommand{\tabref}[1]{Table~\ref{#1}}  % vref from varioref
+\newcommand{\tabnref}[1]{Table~\ref{#1}}  % doesn't use varioref
+\newcommand{\figref}[1]{Figure~\ref{#1}}  % vref from varioref
+\newcommand{\fignref}[1]{Figure~\ref{#1}}  % doesn't use varioref
+\newcommand{\secref}[1]{Section~\ref{#1}}  % vref from varioref
+\newcommand{\secnref}[1]{Section~\ref{#1}}  % doesn't use varioref
+
+\input{obey}
+\input{grammar}
+\renewcommand{\nonterm}[1]{\mbox{$\langle$\textrm{#1}$\rangle$}}
+\renewcommand{\arbno}[1]{\{#1\}}
+\newcommand{\gramquote}[1]{\textrm{`}#1\textrm{'}}
+\input{use-full-height}
+\input{use-full-width}
+\input{continuedenum}
+
+\setlength\RaggedRightParindent{\parindent}
+\input{srm-isa.tex}
+\newcommand{\IFO}[2]{\textrm{\textbf{if} \ensuremath{#1} \textbf{then} \ensuremath{#2} }}
+\newcommand{\IF}[3]{\textrm{\textbf{if} #1 \textbf{then} #2 \textbf{else} #3}}
+\newcommand{\EQUALS}{\ensuremath{=}} % or {\ensuremath{\:\texttt{==}\:}}
+%
+\bibliographystyle{plain}
+%
+\title{Simplified RISC Machine Assembler Manual \\
+       (\lstinline!$Revision: 1.29 $!)}
+\author{Gary T. Leavens \\
+        Leavens@ucf.edu}
+\begin{document}
+
+\maketitle
+\begin{abstract}
+This document defines the assembly language for the
+Simplified RISC Machine VM, which is used in the Systems Software
+class (COP 3402) at UCF.
+It also defines the interface of the assembler and disassembler.
+\end{abstract}
+
+\section{Overview}
+
+The assembler for the Simplified RISC Machine (SRM) is simple and has
+no macro facilities. However, it does let one assemble the
+instructions that make up a program, resolving symbolic names for jump targets,
+and it can define the starting
+address of a program and the program's (static) data section.
+The opcodes generally follow those for the MIPS processor's ISA
+\cite{Kane-Heinrich92} albeit in simplified form.
+
+The assembler assumes that the SRM has $\WS$-bit ($\WSinBytes$-byte)
+words and is byte-addressable.
+
+\subsection{Inputs and Outputs}
+
+\subsubsection{Assembler}
+
+The assembler is passed a single file name as its only command line argument;
+this file should be the name of a (readable) assembler program;
+its output (sent to standard output) is a binary object file.
+
+For example, if the program is contained in the file
+\texttt{myProg.srm}, assuming that the assembler is named \texttt{asm},
+(and both these files are in the current directory), then the assembler
+can be invoked as follows in the Unix shell to produce a binary object file on standard output.
+\begin{lstlisting}
+  ./asm myProg.srm
+\end{lstlisting}
+
+Thus, to put the assembled version of \texttt{myProg.srm} into the file \texttt{myProg.bof},
+one would use a Unix command that redirects the output of the assembler into \texttt{myProg.bof}, as follows.
+
+\begin{lstlisting}
+  ./asm myProg.srm > myProg.bof
+\end{lstlisting}
+
+\subsubsection{Disassembler}
+
+The disassembler is the opposite of the assembler.
+It is passed a single file name, but that file names a (readable) binary object
+file, and it produces, on standard output,
+an assembly language source program.
+
+For example, if the binary object file is found in \texttt{prog.bof},
+assuming that the disassembler is named \texttt{disasm},
+(and both these files are in the current directory), then the disassembler
+can be invoked as follows in the Unix shell to produce (on standard
+output) an assembly language program that would compile to \texttt{prog.bof}.
+
+\begin{lstlisting}
+  ./disasm prog.bof
+\end{lstlisting}
+
+The assembly language program can be redirected into the file \texttt{prog.srm} as follows.
+
+\begin{lstlisting}
+  ./disasm prog.bof > prog.srm
+\end{lstlisting}
+
+\subsection{Error Outputs}
+
+All error messages (e.g., for file permission errors or syntax errors) 
+are sent to standard error output (\texttt{stderr}).
+
+\subsection{Exit Code}
+
+When the either program halts normally, it exits with a zero error code
+(which indicates success on Unix).  However, when \texttt{asm} or
+\texttt{disasm} encounters an error,
+it halts and exits with a non-zero exit code
+(which indicates failure on Unix).
+
+\section{Assembly Language Syntax}
+
+\subsection{Lexical Grammar}
+
+Tokens in the assembler are described by the (regular)
+grammar of \figref{fig:lexical-grammar}.
+Note that line endings are significant in the context-free grammar of
+the assembler, as each instruction must be specified on a single line.
+Lines may be ended either by a newline character (\nonterm{newline} in
+\figref{fig:lexical-grammar})
+or by a combination of a carriage-return (\nonterm{cr}) followed by a newline.
+Comments (\nonterm{comment}) start with a \nonterm{comment-start} (i.e., \texttt{\#})
+and continue to the end of a line.
+White space is needed to separate tokens, but is otherwise ignored.
+
+\begin{figure}
+\begin{grammar}
+\nonterm{section-mark} \: .text \| .data \| .end
+\nonterm{reserved-opcode} \: ADD \| SUB \| AND \| BOR \| NOR \| XOR \| MUL \| DIV
+\> \| \> SLL \| SRL \| MFHI \| MFLO \| JR \| ADDI \| ANDI \| BORI \| XORI \| BEQ
+\> \| \> BGEZ \| BGTZ \| BLTZ \| LBU \| LW \| SB \| SW \| JMP \| JAL
+\nonterm{reserved-data-size} \: WORD
+\nonterm{ident} \: \nonterm{letter} \arbno{\nonterm{letter-or-digit}} \textrm{``but not a \nonterm{reserved-opcode} or \nonterm{reserved-data-size}''}
+\nonterm{letter} \: \_ \| a \| b \| $\ldots$ \| y \| z \| A \| B \| $\ldots$ \| Y \| Z
+\nonterm{letter-or-digit} \: \nonterm{letter} \| \nonterm{dec-digit}
+
+\nonterm{unsigned-number} \: \nonterm{dec-digit} \arbno{\nonterm{dec-digit}}
+ \> \| \> 0x \nonterm{hex-digit}  \arbno{\nonterm{hex-digit}}
+\nonterm{dec-digit} \: 0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6 \| 7 \| 8 \| 9
+\nonterm{hex-digit} \: \nonterm{dec-digit} \| a \| A \| b \| B \| c \| C \| d \| D \| e \| E \| f \| F
+
+\nonterm{reg} \: \nonterm{dollar-sign} \nonterm{unsigned-number} \| \$at \| \$v0 \| \$v1
+\> \| \> \$a0 \| \$a1 \| \$a2 \| \$a3 \| \$t0 \| \$t1 \| \$t2 \| \$t3 \| \$t4 \| \$t5 \| \$t6 \| \$t7
+\> \| \> \$s0 \| \$s1 \| \$s2 \| \$s3 \| \$s4 \| \$s5 \| \$s6 \| \$s7 \| \$t8 \| \$t9
+\> \| \> \$gp \| \$sp \| \$fp \| \$ra
+\nonterm{dollar-sign} \: \$
+
+\nonterm{eol} \: \nonterm{newline} \| \nonterm{cr} \nonterm{newline}
+\nonterm{newline} \: \textrm{``A newline character (ASCII 10)''}
+\nonterm{cr} \: \textrm{``A carriage return character (ASCII 13)''}
+
+\nonterm{ignored} \: \nonterm{blank} \| \nonterm{tab} \| \nonterm{vt} \| \nonterm{formfeed} \| \nonterm{comment}
+\nonterm{blank} \: \textrm{``A space character (ASCII 32)''}
+\nonterm{tab} \: \textrm{``A horizontal tab character (ASCII 9)''}
+\nonterm{vt} \: \textrm{``A vertical tab character (ASCII 11)''}
+\nonterm{formfeed} \: \textrm{``A formfeed character (ASCII 12)''}
+\nonterm{comment} \: \nonterm{comment-start} \arbno{\nonterm{non-nl}}
+\nonterm{comment-start} \: \#
+\nonterm{non-nl} \: \textrm{``Any character except a newline''}
+\end{grammar}
+\caption{
+  Lexical grammar of the SRM assembler.
+  This grammar uses a \texttt{terminal font}
+  for terminal symbols. Note that an underbar (\texttt{\_}) and
+  all ASCII letters (a-z and A-Z) are included in the production
+  for \nonterm{letter}.
+  Curly brackets, such as $\arbno{x}$, mean an arbitrary number of
+  (i.e., 0 or more) repetitions of $x$.
+  Note that curly braces are not terminal symbols in this grammar.
+  Some character classes are described in English, these are described
+  in a Roman font between double quotation marks (`` and '').
+  Note that all characters matched by the nonterminal
+  \nonterm{ignored} are ignored by the lexer.
+  However, the characters that are part of an \nonterm{eol} token
+  (i.e., carriage returns and newlines) are
+  not ignored immediately following a semicolon,
+  \nonterm{reserved-opcode} or \nonterm{reserved-data-size}, although
+  they are ignored in all other contexts.
+  }
+\label{fig:lexical-grammar}
+\end{figure}
+
+\subsection{Context-Free Grammar}
+
+The syntax of the SRM's assembly language is defined by the
+(context-free) grammar in \figref{fig:cfg}.
+
+\begin{figure}
+\begin{grammar}%
+\nonterm{program} \: \nonterm{text-section} \nonterm{data-section} \nonterm{stack-section} .end
+\nonterm{text-section} \: .text \nonterm{entry-point} \nonterm{asm-instr} \arbno{\nonterm{asm-instr}}
+\nonterm{entry-point} \: \nonterm{addr}
+\nonterm{addr} \: \nonterm{label} \| \nonterm{unsigned-number} 
+\nonterm{label} \: \nonterm{ident}
+\nonterm{asm-instr} \: \nonterm{label-opt} \nonterm{instr} \nonterm{eol}
+\nonterm{label-opt} \: \nonterm{label}~:~\| \nonterm{empty}
+\nonterm{empty} \:
+\nonterm{instr} \: \nonterm{three-reg-instr} \| \nonterm{two-reg-instr} \| \nonterm{shift-instr} \| \nonterm{one-reg-instr}
+\> \| \> \nonterm{immed-arith-instr} \| \nonterm{immed-bool-instr} \| \nonterm{branch-test-instr} \| \nonterm{load-store-instr}
+\> \| \> \nonterm{jump-instr}
+\nonterm{three-reg-instr} \: \nonterm{three-reg-op} \nonterm{reg} , \nonterm{reg} , \nonterm{reg}
+\nonterm{three-reg-op} \: ADD \| SUB \| AND \| BOR \| NOR \| XOR
+\nonterm{two-reg-instr} \: \nonterm{two-reg-op} \nonterm{reg} , \nonterm{reg}
+\nonterm{two-reg-op} \: MUL \| DIV
+\nonterm{shift-instr} \: \nonterm{shift-op} \nonterm{reg} , \nonterm{reg} , \nonterm{shift}
+\nonterm{shift-op} \: SLL \| SRL
+\nonterm{shift} \: \nonterm{unsigned-number}
+\nonterm{one-reg-instr} \: \nonterm{one-reg-op} \nonterm{reg}
+\nonterm{one-reg-op} \: MFHI \| MFLO \| JR
+\nonterm{immed-arith-instr} \: \nonterm{immed-arith-op} \nonterm{reg} , \nonterm{reg} , \nonterm{immed}
+\nonterm{immed-arith-op} \: ADDI
+\nonterm{immed} \: \nonterm{number}
+\nonterm{number} \: \nonterm{sign} \nonterm{unsigned-number}
+\nonterm{sign} \: + \| - \| \nonterm{empty}
+\nonterm{immed-bool-instr} \: \nonterm{immed-bool-op} \nonterm{reg} , \nonterm{reg} , \nonterm{uimmed}
+\nonterm{immed-bool-op} \: ANDI \| BORI \| XORI
+\nonterm{uimmed} \: \nonterm{unsigned-number}
+\nonterm{branch-test-instr} \: \nonterm{branch-test-2-op} \nonterm{reg} , \nonterm{reg} , \nonterm{offset} 
+\> \| \> \nonterm{branch-test-1-op} \nonterm{reg} , \nonterm{offset} 
+\nonterm{branch-test-2-op} \: BEQ \| BNE
+\nonterm{branch-test-1-op} \: BGEZ \| BGTZ \| BLEZ \| BLTZ 
+\nonterm{offset} \: \nonterm{number} 
+\nonterm{load-store-instr} \: \nonterm{load-store-op} \nonterm{reg} , \nonterm{reg} , \nonterm{offset}
+\nonterm{load-store-op} \: LBU \| LW \| SB \| SW
+\nonterm{jump-instr} \: \nonterm{jump-op} \nonterm{addr}
+\nonterm{jump-op} \: JMP \| JAL
+\nonterm{syscall-instr} \: \nonterm{syscall-op}
+\nonterm{syscall-op} \: EXIT | PSTR | PCH | RCH | RSTR | STRA | NOTR
+\nonterm{data-section} \: .data \nonterm{static-start-addr} \arbno{\nonterm{static-decl}}
+\nonterm{static-start-addr} \: \nonterm{unsigned-number}
+\nonterm{static-decl} \: \nonterm{data-size} \nonterm{ident} \nonterm{initializer-opt} \nonterm{eol}
+\nonterm{data-size} \: WORD
+\nonterm{initializer-opt} \: = \nonterm{number} \| \nonterm{empty}
+\nonterm{stack-section} \: .stack \nonterm{stack-bottom-addr}
+\nonterm{stack-bottom-addr} \: \nonterm{unsigned-number}%
+\end{grammar}
+\caption{
+  The (context free) grammar of the SRM assembler, which uses 
+  a \texttt{typewriter font} for terminal symbols.
+}
+\label{fig:cfg}
+\end{figure}
+
+\section{Initial Values}
+\label{sec:initialvalues}
+
+The initial value of the program counter ($\PC$) is set to the address of the
+program's entry point (i.e., the value of \nonterm{entry-point}), 
+which is declared at the beginning of the \nonterm{text-section}.
+
+The start of the global data in memory is at the address given by the
+data section's static data start address
+(i.e., the value of \nonterm{static-start-addr}), declared at the
+beginning of the \nonterm{data-section};
+this value is used as the initial value of the $\GP$ register.
+The data declared in the data section all have offsets from this
+address that are computed in declaration order, with \texttt{WORD} sized data
+taking $\WSinBytes$ bytes.
+(\texttt{WORD} is the only data size allowed at present.)
+
+The ``bottom'' of the runtime stack is given in a declaration in
+the stack section (\nonterm{stack-section});
+it is the value of \nonterm{stack-bottom-addr} that follows the
+\texttt{.stack} keyword.
+This must be divisible by $\WSinBytes$ and strictly greater than the
+static data start address; it is also the initial value put in
+the $\FP$ and $\SP$ registers at the start of a program's execution.
+
+\section{Constraints on Assembly Code}
+
+There are some constraints on programs that the assembler checks;
+the assembler considers violations of these constraints to be an error.
+
+The program's entry point (\nonterm{entry-point} value),
+static data start address (\nonterm{static-start-addr} value),
+and stack bottom address (\nonterm{stack-bottom-addr} value)
+must all be divisible by $\WSinBytes$.
+Furthermore, the entry point must be strictly less than the static
+data start address and the static data strart address must be strictly
+less than the stack bottom address.
+
+% Word-sized data declared in the data section must be aligned;
+% that is, the offset of every word declared in the data section
+% (the number of bytes past the start of the data section)
+% must be divisible by $\WSinBytes$. 
+
+\bibliography{srm-vm.bib}
+
+\end{document}

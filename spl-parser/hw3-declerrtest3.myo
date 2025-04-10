@@ -1,0 +1,6 @@
+begin
+  const x = 121;
+  var x;
+end
+.
+hw3-declerrtest3.spl: line 4 variable "x" is already declared as a constant

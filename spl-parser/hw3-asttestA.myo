@@ -1,0 +1,46 @@
+begin
+  const a = 1, b = 2;
+  const c = 3, d = 4, e = 5, f = 6;
+  var x, y, z;
+  x := ((d - e) - ((f * 33) / b));
+  y := (((x + 1) - 2) - (3 * 4));
+  if 0 != y
+  then
+    z := ((y + (100 * 1)) - c)
+  else
+    z := (((5 / x) - (3 * x)) + ((1 * d) / e));
+    if z >= 0
+    then
+      if ((x - 2) + 1) > ((f + 3) - 4)
+      then
+        if ((10 * y) + a) <= ((10 * z) - b)
+        then
+          if divisible c by (2 + 5)
+          then
+            y := ((2 * c) - c)
+          else
+            if ((((6 * d) * 5) - e) - f) == ((x * (10 / b)) - b)
+            then
+              if divisible ((((x - c) - d) - e) - (f / a)) by ((2 * 1) + 1)
+              then
+                print (67 * c)
+              else
+                read z;
+                print ((z * 10) - f);
+                while ((z * 10) - f) < (a - a)
+                do
+                  z := (z - (a / (b / (b + 0))));
+                  print z;
+                  print 10
+                end
+              end
+            else
+              x := 3
+            end
+          end
+        end
+      end
+    end
+  end
+end
+.

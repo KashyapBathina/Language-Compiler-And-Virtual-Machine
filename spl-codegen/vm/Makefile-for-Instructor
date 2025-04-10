@@ -1,0 +1,113 @@
+# $Id: Makefile-for-Instructor,v 1.3 2024/11/10 14:42:04 leavens Exp $
+
+include Makefile
+
+$(BOF_BIN_DUMP): bof_bin_dump.o bof.o utilities.o
+	$(CC) $(CFLAGS) -o $(BOF_BIN_DUMP) $^
+
+.PHONY: all
+all: $(ASM).tab.h vm asm disasm bof_bin_dump
+
+.PRECIOUS: %.out %.lst
+%.out: %.bof $(VM)
+	$(RM) $@
+	- ./$(VM) -t $< > $@ 2>&1
+
+%.lst: %.bof $(VM)
+	rm -f $@
+	- ./$(VM) -p $< > $@ 2>&1
+
+.PHONY: create-outputs
+create-outputs: $(VM) $(ASM) $(TESTS)
+	$(MAKE) -f Makefile-for-Instructor create-vm-outputs
+	$(MAKE) -f Makefile-for-Instructor create-asm-outputs
+
+create-vm-outputs: $(VM) $(ASM) $(TESTS)
+	for f in `echo $(TESTS) | sed -e 's/\\.bof//g'`; \
+	do \
+		$(RM) "$$f.out"; \
+		echo running "$$f.bof" " ... in the VM, with -t option"; \
+		./$(VM) -t "$$f.bof" > "$$f.out" 2>&1 || true ; \
+	done
+	echo 'done creating VM test tracing outputs!'
+
+create-asm-outputs: $(VM) $(ASM) $(TESTS)
+	for f in `echo $(TESTS) | sed -e 's/\\.bof//g'`; \
+	do \
+		$(RM) "$$f.lst"; \
+		echo running "$$f.bof" " ... in the VM, with -p option"; \
+		./$(VM) -p "$$f.bof" > "$$f.lst" 2>&1; \
+	done
+	echo 'done creating listing outputs!'
+
+.PHONY: digest
+digest digest.txt: $(EXPECTEDOUTPUTS) $(EXPECTEDLISTINGS)
+	for f in $(EXPECTEDLISTINGS) ; \
+        do cat $$f; echo " "; \
+	cat `echo $$f | sed -e 's/\\.lst/.out/'`; \
+        echo " "; echo " "; \
+        done >digest.txt
+
+# don't use develop-clean unless you want to regenerate the expected outputs
+.PHONY: develop-clean bof-clean asm-clean
+develop-clean: cleanall asm-clean
+	$(RM) digest.txt
+	$(RM) y.tab.h
+
+asm-clean:
+	$(RM) $(ASM)_lexer.[ch] $(ASM).tab.[ch] asm.output
+	$(RM) $(ASM).exe $(ASM) $(DISASM).exe $(DISASM) $(LEXER) $(LEXER).exe
+	$(RM) $(BOF_BIN_DUMP).exe $(BOF_BIN_DUMP)
+
+outputs-clean: clean asm-clean bof-clean
+	$(RM) $(EXPECTEDOUTPUTS) $(EXPECTEDLISTINGS)
+
+bof-clean:
+	$(RM) *.bof
+
+ZIPFILE = hw1-tests.zip
+TESTSZIPFILE = ../$(ZIPFILE)
+PROVIDEDFILES = Makefile asm_main.c asm.y asm_lexer.l \
+		asm_lexer.c asm.tab.[ch] parser_types.h \
+		asm_unparser.[ch] ast.[ch] bof.[ch] machine_types.[ch] \
+		utilities.[ch] file_location.[ch] lexer.[ch] \
+		pass1.[ch] assemble.[ch] instruction.[ch] regname.[ch] \
+		symtab.[ch] utilities.[ch] char_utilities.[ch] \
+		id_attrs_assoc.h disasm_main.c disasm.[ch] \
+		vm_test*.asm vm_test*.out vm_test*.bof vm_test*.lst \
+		bof_bin_dump.c
+
+PDFFILES = ../../ssm-vm.pdf ../../ssm-asm.pdf
+
+.PHONY: zip $(ZIPFILE)
+
+zip $(ZIPFILE): $(TESTSZIPFILE)
+
+$(TESTSZIPFILE): $(PDFFILES) Makefile $(TESTS) $(PROVIDEDFILES) $(VM) create-vm-outputs
+	$(RM) $(TESTSZIPFILE)
+	$(CHMOD) a-w *.lst *.asm *.bof *.lst *.[ch] \
+		$(EXPECTEDOUTPUTS) $(EXPECTEDLISTINGS)
+	$(CHMOD) a+r Makefile $(TESTS) $(PROVIDEDFILES)
+	$(CHMOD) u+w Makefile asm.tab.h asm.tab.c
+	$(ZIP) $(TESTSZIPFILE) $(PDFFILES) Makefile $(TESTS) $(PROVIDEDFILES)
+	$(CHMOD) u+rw Makefile $(TESTS) $(PROVIDEDFILES) *.[ch]
+
+%.bof: %.$(ASM)
+	$(RM) -f $@
+	./$(ASM) $<
+
+SOLUTIONZIP = hw1-solution.zip
+
+.PHONY: $(SOLUTIONZIP) solution
+$(SOLUTIONZIP) ~/temp/$(SOLUTIONZIP) solution: Makefile $(ASM) $(TESTS) \
+					$(PROVIDEDFILES) *.out *.lst *.c *.h
+	$(MAKE) clean
+	$(ZIP) ~/temp/hw1-solution.zip $^
+
+show_magic.o: bof.h
+
+show_magic: show_magic.o bof.o utilities.o
+	$(CC) $^ -o $@
+
+test: test.o machine_types.o utilities.o
+	$(CC) $^ -o $@

@@ -1,0 +1,2 @@
+hw3-errtest0.spl:3: invalid character: '!' ('\041')
+(null):4: syntax error, unexpected end of file, expecting .

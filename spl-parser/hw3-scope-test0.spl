@@ -1,0 +1,10 @@
+% $Id: hw3-scope-test0.spl,v 1.5 2024/10/07 22:38:52 leavens Exp $
+begin
+  const x = 10;
+  proc nested
+  begin
+    const x = 3;
+    print x     % prints 3
+  end;
+  call nested
+end.

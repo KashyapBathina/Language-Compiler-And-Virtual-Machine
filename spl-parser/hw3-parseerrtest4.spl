@@ -1,0 +1,10 @@
+% $Id: hw3-parseerrtest4.spl,v 1.4 2024/10/07 21:38:11 leavens Exp $
+% syntax error, no begin!
+var x;
+if 0 < 1
+then
+   x := 2
+end.
+
+
+

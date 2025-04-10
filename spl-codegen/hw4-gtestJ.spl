@@ -1,0 +1,26 @@
+% $Id: hw4-gtestJ.spl,v 1.3 2024/11/11 21:36:18 leavens Exp $
+begin
+  const ten = 10;
+  const fifty = 50;
+  var x, y, z, w;
+  var a, b, c;
+  print z;              % prints 0
+  if ten <= fifty
+  then
+    x := 10 + 25;  
+    print x;       % prints 35
+    y := x + 10;   
+    print y;       % prints 45
+    z := y + (y-x); 
+    print z;        % prints 55
+    if (z + 0*9999) > fifty   % should be true
+    then
+      w := ten * x + y + z / 11;
+      print w  % prints 400
+    else
+      print z / 5 + ten
+    end
+  else       
+    print a
+  end
+end.

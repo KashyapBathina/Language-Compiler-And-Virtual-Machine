@@ -1,0 +1,5 @@
+% $Id: hw3-errtest1.spl,v 1.3 2024/09/17 20:58:21 leavens Exp $
+begin
+    print 49  %; syntax error, missing semicolon!
+    print 10  % a newline
+end.

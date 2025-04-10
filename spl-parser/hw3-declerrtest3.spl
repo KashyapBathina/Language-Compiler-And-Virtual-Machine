@@ -1,0 +1,5 @@
+% $Id: hw3-declerrtest3.spl,v 1.2 2024/09/17 20:58:21 leavens Exp $
+begin
+  const x = 121;
+  var x;  % error, duplicate declaration!
+end.

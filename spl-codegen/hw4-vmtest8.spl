@@ -1,0 +1,14 @@
+% $Id: hw4-vmtest8.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  var x, y;
+  begin
+    if 99 < 86
+    then
+       x := +72
+    else
+       y := 1
+    end;
+    print x;   % prints 0
+    print y    % prints 1
+  end
+end.

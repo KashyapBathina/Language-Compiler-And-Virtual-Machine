@@ -1,0 +1,9 @@
+% $Id: hw2-test6.spl,v 1.2 2024/09/17 19:35:42 leavens Exp $
+begin
+  const a = 3, b = 4, c = 5;
+  const d = 6, e = 7, f = 8, g = 9;
+  var q, r, s;
+  var t, u, v;
+  var w, x, y, z;
+  x := 0
+end.

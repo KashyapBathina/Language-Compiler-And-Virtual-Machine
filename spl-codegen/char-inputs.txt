@@ -1,0 +1,6 @@
+$Id: char-inputs.txt,v 1.2 2024/11/13 19:48:06 leavens Exp leavens $
+"8N[3456789abcdefghijklmnopqrstuvwzyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+ljk;.!@$%`~<>,?/\[{}]dfafjk
+skfj8u32820t-0i[pkrojgivrmolk;u
+slkdfj;sdfkjalskj

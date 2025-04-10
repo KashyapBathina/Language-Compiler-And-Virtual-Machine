@@ -1,0 +1,7 @@
+% $Id: hw4-vmtestB.spl,v 1.2 2024/09/17 21:48:53 leavens Exp $
+begin
+  const c = 32;
+  const five = 5, three = 3;
+  var x, y, z;
+  var i, j, k;
+end.

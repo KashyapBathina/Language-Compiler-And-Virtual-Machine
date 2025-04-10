@@ -1,0 +1,9 @@
+% $Id: hw3-errtest4.spl,v 1.7 2024/10/07 22:38:52 leavens Exp $
+begin
+  
+  proc p
+  begin
+    const x;   % error, syntax error!
+  end          % and another here!
+  .            % and another syntax error!
+end!

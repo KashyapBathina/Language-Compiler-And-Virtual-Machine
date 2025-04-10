@@ -1,0 +1,18 @@
+% $Id: hw4-gtestM.spl,v 1.2 2024/09/17 21:48:53 leavens Exp $
+begin
+  const seven = 7;
+  var x;
+  begin
+    print seven;  % prints 7
+    x := seven / ((100 * 100) / (100 * 100));
+    while x > 1
+    do
+      print x;  % prints 7, 11, 17, 26, 13, 20, 10, 5, 8, 4, 2
+      if divisible x by 2
+      then x := x / 2
+      else x := (3 * x + 1) / 2
+      end
+    end;
+    print x + (seven - seven + (6 - (5+1)) * 3402) % prints 1
+  end
+end.

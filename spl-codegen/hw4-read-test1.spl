@@ -1,0 +1,12 @@
+% $Id: hw4-read-test1.spl,v 1.2 2024/09/17 21:48:53 leavens Exp $
+begin
+  var rd;
+  begin
+    read rd;
+    while rd > 0
+    do
+      print rd;
+      read rd
+    end
+  end
+end.

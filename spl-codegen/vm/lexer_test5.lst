@@ -1,0 +1,7 @@
+Address Instruction
+     0: LIT $sp, 0, -1
+     1: ANDI $sp, 0, 0xff
+     2: ADDI $sp, 0, 256
+     3: EXIT 0
+     512: 1869357153	     513: 1931503470	     514: 684660	     515: 0	
+        ...     

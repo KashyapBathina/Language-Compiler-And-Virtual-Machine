@@ -1,0 +1,9 @@
+% $Id: hw4-gtestR.spl,v 1.1 2024/11/12 02:04:20 leavens Exp $
+begin
+ if divisible 8 by 3
+ then
+   print 1
+ else
+   print 99  % prints 99
+ end
+end.

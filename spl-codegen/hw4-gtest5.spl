@@ -1,0 +1,5 @@
+% $Id: hw4-gtest5.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  print 340;  % prints 340
+  print 2     % prints 2
+end.

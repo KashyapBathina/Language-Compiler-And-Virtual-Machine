@@ -1,0 +1,30 @@
+Address Instruction
+     0: SUB $sp, 0, $sp, 0
+     1: AND $sp, 0, $sp, 0
+     2: BOR $sp, 0, $sp, 0
+     3: NOR $sp, 0, $sp, 0
+     4: XOR $sp, 0, $sp, 0
+     5: MUL $sp, 0
+     6: CFHI $sp, 0
+     7: CFLO $sp, -1
+     8: RTN 
+     9: ADDI $sp, 0, 13
+    10: ADD $sp, 0, $ra, 0
+    11: CALL 0	# target is word address 0
+    12: ANDI $sp, 0, 0x8
+    13: XORI $sp, -1, 0x567a
+    14: BEQ $sp, -1, 2	# target is word address 16
+    15: BNE $sp, -1, 4	# target is word address 19
+    16: BGEZ $sp, 0, 3	# target is word address 19
+    17: BGTZ $sp, 0, 2	# target is word address 19
+    18: BLTZ $sp, 0, 1	# target is word address 19
+    19: BLEZ $sp, 1, 2	# target is word address 21
+    20: SRI $sp, 1
+    21: LIT $sp, 0, 100
+    22: LIT $sp, -1, 10
+    23: MUL $sp, -1
+    24: STRA 
+    25: NOTR 
+    26: EXIT 0
+    2048: 10	    2049: 0	    2050: -52345	    2051: 16	    2052: 0	
+        ...     

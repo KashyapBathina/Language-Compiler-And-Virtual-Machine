@@ -1,0 +1,10 @@
+Address Instruction
+     0: NOP 
+     1: ADDI $sp, 0, 1
+     2: SCA $sp, -1, $sp, 0
+     3: SRI $sp, 1
+     4: SWR $sp, -1, $fp
+     5: ADDI $sp, -1, 104
+     6: LWI $sp, -2, $gp, 0
+     7: EXIT 0
+     104: 42	     105: 0	        ...     

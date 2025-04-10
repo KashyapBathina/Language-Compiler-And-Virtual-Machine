@@ -1,0 +1,9 @@
+Tokens from file hw2-errtest0.spl
+Number Line  Text
+hw2-errtest0.spl:3: invalid character: '#' ('\043')
+hw2-errtest0.spl:3: invalid character: '!' ('\041')
+hw2-errtest0.spl:3: invalid character: '?' ('\077')
+hw2-errtest0.spl:3: invalid character: ''' ('\047')
+hw2-errtest0.spl:3: invalid character: '"' ('\042')
+hw2-errtest0.spl:3: invalid character: '&' ('\046')
+hw2-errtest0.spl:3: invalid character: '^' ('\0136')

@@ -1,0 +1,17 @@
+Tokens from file hw2-errtest6.spl
+Number Line  Text
+hw2-errtest6.spl:3: invalid character: '}' ('\0175')
+hw2-errtest6.spl:3: invalid character: '{' ('\0173')
+258    4    "It"
+258    4    "doesn"
+hw2-errtest6.spl:4: invalid character: ''' ('\047')
+258    4    "t"
+258    4    "have"
+258    4    "to"
+258    4    "parse"
+hw2-errtest6.spl:4: invalid character: '!' ('\041')
+hw2-errtest6.spl:5: invalid character: '"' ('\042')
+258    5    "ok"
+hw2-errtest6.spl:5: invalid character: '?' ('\077')
+hw2-errtest6.spl:5: invalid character: '"' ('\042')
+hw2-errtest6.spl:6: invalid character: '?' ('\077')

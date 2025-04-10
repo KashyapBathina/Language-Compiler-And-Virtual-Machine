@@ -1,0 +1,10 @@
+begin
+  const y = 86, x = 10;
+  proc nested
+  begin
+    const z = 99, x = 3;
+    print x
+  end;
+  call nested
+end
+.

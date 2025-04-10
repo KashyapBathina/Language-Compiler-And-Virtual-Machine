@@ -1,0 +1,11 @@
+Tokens from file hw2-errtest4.spl
+Number Line  Text
+258    2    "something"
+258    2    "bad"
+258    2    "is"
+258    2    "coming"
+264    2    "."
+264    2    "."
+264    2    "."
+hw2-errtest4.spl:3: Number (9999999999999324324125435236665565677) is too large!
+259    3    "9999999999999324324125435236665565677"

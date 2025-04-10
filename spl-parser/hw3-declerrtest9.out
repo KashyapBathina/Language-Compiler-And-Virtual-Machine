@@ -1,0 +1,21 @@
+begin
+  const w = 99, x = 100;
+  const y = 122, z = 123;
+  var a, b;
+  var c, d;
+  if a < w
+  then
+    begin
+      c := ((y / z) * x);
+      d := w;
+      if divisible ((c - (d * e)) - b) by 2
+      then
+        e := f
+      else
+        e := 3
+      end
+    end
+  end
+end
+.
+hw3-declerrtest9.spl: line 12 identifier "e" is not declared!

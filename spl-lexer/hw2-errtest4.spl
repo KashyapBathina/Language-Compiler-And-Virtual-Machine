@@ -1,0 +1,3 @@
+% $Id: hw2-errtest4.spl,v 1.4 2024/09/17 19:35:42 leavens Exp $
+something bad is coming...
+9999999999999324324125435236665565677 % a number that is way too big!

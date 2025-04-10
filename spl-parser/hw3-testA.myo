@@ -1,0 +1,5 @@
+begin
+  var x;
+  x := 25
+end
+.

@@ -1,0 +1,7 @@
+% $Id: hw4-gtest2.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  if 3 < 4
+  then print 10    % prints 10
+  else print 11
+  end
+end.

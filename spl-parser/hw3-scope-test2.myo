@@ -1,0 +1,15 @@
+begin
+  var arg;
+  proc countDown
+  begin
+    print arg;
+    if arg >= 0
+    then
+      arg := (arg - 1);
+      call countDown
+    end
+  end;
+  arg := 4;
+  call countDown
+end
+.

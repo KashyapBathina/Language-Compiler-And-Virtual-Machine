@@ -1,0 +1,8 @@
+% $Id: hw4-gtest6.spl,v 1.3 2024/09/17 21:48:53 leavens Exp $
+begin
+  const three = 3;
+  var four;
+  four := 4;
+  print three;  % prints 3
+  print four    % prints 4
+end.

@@ -1,0 +1,31 @@
+% $Id: hw4-gtestI.spl,v 1.4 2024/11/10 12:54:14 leavens Exp $
+begin
+  const z = 0;
+  const two = 2;
+  var t;
+  var a, b, c;
+  var d, e, f;
+  t := 3; f := 4;
+  print a;  % prints 0
+  a := t + d; 
+  print a;  % prints 3
+  print d;  % prints 0
+  if t == f then print t else print z end; % prints 0
+  if t != f then print f else print two end; % prints 4
+  if t < f then print two * two * two + 100  % prints 108
+           else print t * t end;
+  if t >= f then print f / f
+            else print two * t + f end;    % prints 10 (i.e., 6+4)
+  if divisible z by 2 then print f - t else print z end;  % prints 1
+  if t > f then b := two; c := f * f + b; print c; print b
+           else print two / two        % prints 1
+	   end;
+  if t <= f
+  then
+    d := t; e := f;
+    f := d; t := e;
+    print t;             % prints 4
+    print f              % prints 3
+  else print z + (t-t)/t
+  end
+end.
